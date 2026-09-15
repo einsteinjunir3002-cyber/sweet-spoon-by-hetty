@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { requireOwner, slugify } from '@/lib/utils'
 import { productSchema } from '@/lib/validations'
-import { z } from 'zod'
 
 // GET /api/admin/products/[id]
 export async function GET(
@@ -30,7 +29,7 @@ export async function GET(
   return NextResponse.json({ product })
 }
 
-// PATCH /api/admin/products/[id]
+// PATCH /api/admin/products/[id] — Update product and main image
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -64,6 +63,21 @@ export async function PATCH(
       },
       include: { images: true, category: true, inventory: true, variants: true },
     })
+
+    // Update product image if provided
+    if (body.imageUrl !== undefined) {
+      await db.productImage.deleteMany({ where: { productId: id } })
+      if (body.imageUrl) {
+        await db.productImage.create({
+          data: {
+            productId: id,
+            url: body.imageUrl,
+            altText: product.name,
+            isMain: true,
+          },
+        })
+      }
+    }
 
     // Update inventory if provided
     if (body.stock !== undefined) {
@@ -104,7 +118,6 @@ export async function DELETE(
   const { id } = await params
 
   try {
-    // Soft delete — archive instead of hard delete if product has orders
     const orderCount = await db.orderItem.count({ where: { productId: id } })
 
     if (orderCount > 0) {
@@ -112,6 +125,8 @@ export async function DELETE(
       return NextResponse.json({ message: 'Product archived (it has existing orders)' })
     }
 
+    await db.productImage.deleteMany({ where: { productId: id } })
+    await db.inventory.deleteMany({ where: { productId: id } })
     await db.product.delete({ where: { id } })
     return NextResponse.json({ message: 'Product deleted' })
   } catch (err) {

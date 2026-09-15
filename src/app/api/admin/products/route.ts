@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
-import { requireOwner } from '@/lib/utils'
+import { requireOwner, slugify } from '@/lib/utils'
 import { productSchema } from '@/lib/validations'
-import { slugify } from '@/lib/utils'
 
 // GET /api/admin/products — List all products (admin)
 export async function GET(request: NextRequest) {
@@ -11,7 +10,7 @@ export async function GET(request: NextRequest) {
 
   const { searchParams } = new URL(request.url)
   const page = parseInt(searchParams.get('page') ?? '1')
-  const limit = parseInt(searchParams.get('limit') ?? '20')
+  const limit = parseInt(searchParams.get('limit') ?? '50')
   const search = searchParams.get('search') ?? ''
   const category = searchParams.get('category') ?? ''
   const status = searchParams.get('status') ?? ''
@@ -57,7 +56,7 @@ export async function GET(request: NextRequest) {
   return NextResponse.json({ products, total, page, limit })
 }
 
-// POST /api/admin/products — Create product
+// POST /api/admin/products — Create product with image support
 export async function POST(request: NextRequest) {
   const { error } = await requireOwner()
   if (error) return error
@@ -77,9 +76,16 @@ export async function POST(request: NextRequest) {
       data: {
         ...data,
         slug,
+        images: body.imageUrl ? {
+          create: {
+            url: body.imageUrl,
+            altText: data.name,
+            isMain: true,
+          }
+        } : undefined,
         inventory: {
           create: {
-            quantity: body.initialStock ?? 0,
+            quantity: body.stock ?? 50,
             trackStock: body.trackStock ?? true,
             lowStockThreshold: body.lowStockThreshold ?? 5,
           },

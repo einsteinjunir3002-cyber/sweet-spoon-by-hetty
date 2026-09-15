@@ -75,6 +75,20 @@ export default function AdminProductsPage() {
     fetchCategories()
   }, [])
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    if (file.size > 5 * 1024 * 1024) {
+      setError('Image file must be smaller than 5MB')
+      return
+    }
+    const reader = new FileReader()
+    reader.onloadend = () => {
+      setImageUrl(reader.result as string)
+    }
+    reader.readAsDataURL(file)
+  }
+
   const openCreateForm = () => {
     setEditingId(null)
     setName('')
@@ -204,7 +218,7 @@ export default function AdminProductsPage() {
       {loading ? (
         <div className={styles.loading}>Loading products...</div>
       ) : filteredProducts.length === 0 ? (
-        <div className={styles.emptyState}>No products found.</div>
+        <div className={styles.emptyState}>No products found. Add your first yogurt or Brukina product!</div>
       ) : (
         <div className={styles.productsTableWrapper}>
           <table className={styles.table}>
@@ -225,7 +239,7 @@ export default function AdminProductsPage() {
                   <td>
                     <div className={styles.prodThumb}>
                       {product.images[0]?.url ? (
-                        <Image src={product.images[0].url} alt={product.name} width={48} height={48} style={{ objectFit: 'cover' }} />
+                        <img src={product.images[0].url} alt={product.name} style={{ width: 48, height: 48, objectFit: 'cover', borderRadius: 8 }} />
                       ) : (
                         <div className={styles.placeholderThumb}>🥛</div>
                       )}
@@ -295,11 +309,67 @@ export default function AdminProductsPage() {
                 <input
                   type="text"
                   required
-                  placeholder="e.g. Pure Greek Yogurt (Vanilla)"
+                  placeholder="e.g. Pure Greek Yogurt (Strawberry)"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   className={styles.input}
                 />
+              </div>
+
+              {/* Product Image Upload Section */}
+              <div className={styles.formGroup}>
+                <label>Product Photo (Device Upload or Image URL)</label>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10, padding: 16, border: '2px dashed #f472b6', borderRadius: 12, background: '#fff1f2', alignItems: 'center', textAlign: 'center' }}>
+                  {imageUrl ? (
+                    <div style={{ position: 'relative' }}>
+                      <img src={imageUrl} alt="Product Preview" style={{ width: 120, height: 120, objectFit: 'cover', borderRadius: 10, border: '2px solid #ec4899' }} />
+                      <button
+                        type="button"
+                        onClick={() => setImageUrl('')}
+                        style={{ position: 'absolute', top: -8, right: -8, background: '#ef4444', color: '#fff', border: 'none', borderRadius: '50%', width: 24, height: 24, cursor: 'pointer' }}
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ) : (
+                    <div style={{ color: '#be185d', fontSize: '0.9rem' }}>
+                      📸 Select a photo from your Phone or Computer
+                    </div>
+                  )}
+
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    id="file-upload-btn"
+                    style={{ display: 'none' }}
+                  />
+                  <label
+                    htmlFor="file-upload-btn"
+                    style={{
+                      background: 'linear-gradient(135deg, #ec4899, #be185d)',
+                      color: '#fff',
+                      padding: '8px 18px',
+                      borderRadius: 20,
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      fontSize: '0.875rem'
+                    }}
+                  >
+                    {imageUrl ? 'Change Photo' : 'Upload Image File'}
+                  </label>
+
+                  <div style={{ width: '100%', borderTop: '1px solid #fbcfe8', margin: '4px 0' }} />
+
+                  <input
+                    type="text"
+                    placeholder="Or paste image web link (https://...)"
+                    value={imageUrl}
+                    onChange={(e) => setImageUrl(e.target.value)}
+                    className={styles.input}
+                    style={{ background: '#fff' }}
+                  />
+                </div>
               </div>
 
               <div className={styles.formRow}>
@@ -379,21 +449,10 @@ export default function AdminProductsPage() {
               </div>
 
               <div className={styles.formGroup}>
-                <label>Image URL</label>
-                <input
-                  type="text"
-                  placeholder="https://... image link or artifact URL"
-                  value={imageUrl}
-                  onChange={(e) => setImageUrl(e.target.value)}
-                  className={styles.input}
-                />
-              </div>
-
-              <div className={styles.formGroup}>
                 <label>Description</label>
                 <textarea
                   rows={4}
-                  placeholder="Describe the product taste, ingredients, and storage instructions..."
+                  placeholder="Describe taste, ingredients, probiotic benefits, and storage guidelines..."
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   className={styles.textarea}
