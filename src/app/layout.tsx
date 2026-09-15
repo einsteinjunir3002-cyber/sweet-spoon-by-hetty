@@ -47,6 +47,8 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 }
 
+export const dynamic = 'force-dynamic'
+
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
@@ -58,7 +60,12 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  const session = await auth()
+  let session = null
+  try {
+    session = await auth()
+  } catch {
+    session = null
+  }
 
   return (
     <html lang="en">
