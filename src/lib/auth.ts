@@ -4,7 +4,7 @@ import bcrypt from 'bcryptjs'
 import { db } from '@/lib/db'
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  secret: process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET || 'sweet-spoon-secret-key-32-chars-minimum-debbie-2026',
+  secret: process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET,
   trustHost: true,
   session: {
     strategy: 'jwt',
@@ -29,61 +29,32 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const identifier = (credentials.identifier as string).trim().toLowerCase()
         const password = credentials.password as string
 
-        // 1. Built-in Owner Fallback Credentials (allows Hetty to log in anytime)
-        const isOwnerUsername = [
-          'bigdebbie',
-          'hetty',
-          'admin',
-          'owner',
-          'bigdebbie@sweetspoonbyhetty.com',
-          'hetty@sweetspoonbyhetty.com',
-        ].includes(identifier)
+        // Database User Auth via hashed password
+        try {
+          const user = await db.user.findFirst({
+            where: {
+              OR: [
+                { email: identifier },
+                { username: identifier },
+              ],
+              isActive: true,
+            },
+          })
 
-        const isOwnerPassword = [
-          'debbie12345',
-          'hetty123',
-          'admin123',
-          'sweetspoon2026',
-        ].includes(password)
-
-        if (isOwnerUsername && isOwnerPassword) {
-          return {
-            id: 'owner-hetty-admin-id',
-            name: 'Hetty (Sweet Spoon Owner)',
-            email: 'BigDebbie@sweetspoonbyhetty.com',
-            role: 'OWNER',
-            mustChangePassword: false,
-          }
-        }
-
-        // 2. Database User Auth (if database is connected)
-        if (process.env.DATABASE_URL) {
-          try {
-            const user = await db.user.findFirst({
-              where: {
-                OR: [
-                  { email: identifier },
-                  { username: identifier },
-                ],
-                isActive: true,
-              },
-            })
-
-            if (user) {
-              const isPasswordValid = await bcrypt.compare(password, user.password)
-              if (isPasswordValid) {
-                return {
-                  id: user.id,
-                  email: user.email,
-                  name: user.name ?? user.username,
-                  role: user.role,
-                  mustChangePassword: user.mustChangePassword,
-                }
+          if (user) {
+            const isPasswordValid = await bcrypt.compare(password, user.password)
+            if (isPasswordValid) {
+              return {
+                id: user.id,
+                email: user.email,
+                name: user.name ?? user.username,
+                role: user.role,
+                mustChangePassword: user.mustChangePassword,
               }
             }
-          } catch (dbError) {
-            console.warn('Database user auth fallback:', dbError)
           }
+        } catch (dbError) {
+          console.error('Database user authentication error:', dbError)
         }
 
         throw new Error('Invalid email/username or password')
