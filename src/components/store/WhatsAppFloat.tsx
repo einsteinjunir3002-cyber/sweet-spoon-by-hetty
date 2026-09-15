@@ -1,12 +1,13 @@
 'use client'
 
 interface WhatsAppFloatProps {
-  whatsappNumber?: string
+  whatsappNumber?: string | null
 }
 
 export function WhatsAppFloat({ whatsappNumber = '0535372613' }: WhatsAppFloatProps) {
-  const cleaned = whatsappNumber.replace(/^0/, '')
-  const url = `https://wa.me/233${cleaned}?text=${encodeURIComponent('Hello! I\'d like to place an order from Sweet Spoon by Hetty.')}`
+  const numStr = (whatsappNumber && typeof whatsappNumber === 'string') ? whatsappNumber : '0535372613'
+  const cleaned = numStr.replace(/[^0-9]/g, '').replace(/^0/, '')
+  const url = `https://wa.me/233${cleaned || '535372613'}?text=${encodeURIComponent('Hello! I\'d like to place an order from Sweet Spoon by Hetty.')}`
 
   return (
     <a

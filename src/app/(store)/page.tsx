@@ -57,8 +57,9 @@ export default async function HomePage() {
 
   const heroTitle = settings?.heroTitle ?? 'Freshly Made. Naturally Delicious.'
   const heroSubtitle = settings?.heroSubtitle ?? 'Premium Greek Yogurt, Probiotic Yogurt and Brukina — made fresh daily in Ho, Volta Region, Ghana.'
-  const whatsappNumber = settings?.whatsappNumber ?? '0535372613'
-  const whatsappUrl = `https://wa.me/233${whatsappNumber.replace(/^0/, '')}?text=${encodeURIComponent('Hello! I\'d like to place an order.')}`
+  const rawWhatsapp = (settings?.whatsappNumber && typeof settings.whatsappNumber === 'string') ? settings.whatsappNumber : '0535372613'
+  const cleanedWhatsapp = rawWhatsapp.replace(/[^0-9]/g, '').replace(/^0/, '')
+  const whatsappUrl = `https://wa.me/233${cleanedWhatsapp || '535372613'}?text=${encodeURIComponent('Hello! I\'d like to place an order.')}`
 
   const features = (settings?.featuresJson as Array<{ icon: string; title: string; description: string }> | null) ?? [
     { icon: '🌿', title: 'Freshly Made Daily', description: 'Every batch is made fresh daily — no stockpiling, no compromise.' },

@@ -24,11 +24,12 @@ export function Footer({ settings, socialLinks }: FooterProps) {
   const businessName = settings?.businessName ?? 'Sweet Spoon by Hetty'
   const phone1 = settings?.phone1 ?? '0535372613'
   const phone2 = settings?.phone2 ?? '0508168299'
-  const whatsapp = settings?.whatsappNumber ?? '0535372613'
-  const city = settings?.city ?? 'Ho'
-  const region = settings?.region ?? 'Volta Region, Ghana'
+  const whatsapp = (settings?.whatsappNumber && typeof settings.whatsappNumber === 'string') ? settings.whatsappNumber : '0535372613'
+  const city = settings?.city ?? 'Kumasi / Ho'
+  const region = settings?.region ?? 'Ghana'
 
-  const whatsappUrl = `https://wa.me/233${whatsapp.replace(/^0/, '')}?text=${encodeURIComponent("Hello! I'd like to place an order.")}`
+  const cleanedWhatsapp = whatsapp.replace(/[^0-9]/g, '').replace(/^0/, '')
+  const whatsappUrl = `https://wa.me/233${cleanedWhatsapp || '535372613'}?text=${encodeURIComponent("Hello! I'd like to place an order.")}`
 
   return (
     <footer className={styles.footer}>

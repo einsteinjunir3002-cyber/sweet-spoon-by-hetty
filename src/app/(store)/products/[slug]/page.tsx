@@ -115,7 +115,8 @@ export default function ProductPage() {
       (notes ? `\nNotes: ${notes}` : '') +
       `\n\nPlease confirm availability and delivery options.`
     )
-    window.open(`https://wa.me/233${whatsappNumber.replace(/^0/, '')}?text=${message}`, '_blank')
+    const cleanedNum = (whatsappNumber && typeof whatsappNumber === 'string') ? whatsappNumber.replace(/[^0-9]/g, '').replace(/^0/, '') : '0535372613'
+    window.open(`https://wa.me/233${cleanedNum || '0535372613'}?text=${message}`, '_blank')
   }
 
   const isOutOfStock = product?.inventory?.trackStock && product.inventory.quantity <= 0

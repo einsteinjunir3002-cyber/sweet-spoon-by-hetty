@@ -54,8 +54,9 @@ function useCountdown(targetDate: Date | null) {
 
 export function ComingSoon({ settings, socialLinks }: ComingSoonProps) {
   const timeLeft = useCountdown(settings?.launchDate ?? null)
-  const whatsapp = settings?.whatsappNumber ?? '0535372613'
-  const whatsappUrl = `https://wa.me/233${whatsapp.replace(/^0/, '')}?text=${encodeURIComponent('Hello! I\'d like to know when you\'ll be ready to take orders.')}`
+  const rawWhatsapp = (settings?.whatsappNumber && typeof settings.whatsappNumber === 'string') ? settings.whatsappNumber : '0535372613'
+  const cleanedWhatsapp = rawWhatsapp.replace(/[^0-9]/g, '').replace(/^0/, '')
+  const whatsappUrl = `https://wa.me/233${cleanedWhatsapp || '535372613'}?text=${encodeURIComponent('Hello! I\'d like to know when you\'ll be ready to take orders.')}`
   const hasLaunchDate = !!settings?.launchDate
 
   return (
