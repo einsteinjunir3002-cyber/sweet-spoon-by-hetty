@@ -8,6 +8,7 @@ export default function AdminSettingsPage() {
   const [saving, setSaving] = useState(false)
   const [savedMsg, setSavedMsg] = useState('')
 
+  const [theme, setTheme] = useState('pink-feminine')
   const [businessName, setBusinessName] = useState('Sweet Spoon by Hetty')
   const [tagline, setTagline] = useState('Freshly Made. Naturally Delicious.')
   const [phone1, setPhone1] = useState('0546686616')
@@ -24,6 +25,10 @@ export default function AdminSettingsPage() {
   const [announcementEnabled, setAnnouncementEnabled] = useState(true)
 
   useEffect(() => {
+    // Load local theme
+    const savedTheme = localStorage.getItem('sweet_spoon_theme') || 'pink-feminine'
+    setTheme(savedTheme)
+
     fetch('/api/admin/settings')
       .then((r) => r.json())
       .then((data) => {
@@ -50,6 +55,12 @@ export default function AdminSettingsPage() {
         setLoading(false)
       })
   }, [])
+
+  const handleThemeChange = (themeId: string) => {
+    setTheme(themeId)
+    localStorage.setItem('sweet_spoon_theme', themeId)
+    document.documentElement.setAttribute('data-theme', themeId)
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -97,12 +108,46 @@ export default function AdminSettingsPage() {
     <div className={styles.container}>
       <div className={styles.header}>
         <h2>Store & Business Settings</h2>
-        <p>Manage business contact details, homepage banners, and store information</p>
+        <p>Manage business contact details, visual themes, homepage banners, and store information</p>
       </div>
 
       {savedMsg && <div className={styles.successAlert}>{savedMsg}</div>}
 
       <form onSubmit={handleSubmit} className={styles.form}>
+        {/* Section 0: Theme Selection */}
+        <div className={styles.sectionCard}>
+          <h3>🎨 Website Theme & Color Palette</h3>
+          <p style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: 16 }}>
+            Select a predefined visual theme to transform the look of the storefront in 1 click!
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
+            {[
+              { id: 'pink-feminine', name: '🌸 Feminine Pink & Rose Gold', bg: 'linear-gradient(135deg, #f472b6, #be185d)' },
+              { id: 'berry-blush', name: '🫐 Berry Blush & Velvet Purple', bg: 'linear-gradient(135deg, #a855f7, #6d28d9)' },
+              { id: 'creamy-vanilla', name: '🍦 Creamy Vanilla & Champagne Gold', bg: 'linear-gradient(135deg, #f59e0b, #b45309)' },
+              { id: 'fresh-mint', name: '🍃 Fresh Mint & Cream White', bg: 'linear-gradient(135deg, #10b981, #047857)' },
+              { id: 'chocolate-strawberry', name: '🍫 Cocoa & Strawberry Rose', bg: 'linear-gradient(135deg, #e11d48, #9f1239)' },
+            ].map((t) => (
+              <div
+                key={t.id}
+                onClick={() => handleThemeChange(t.id)}
+                style={{
+                  border: theme === t.id ? '3px solid #ec4899' : '2px solid #e5e7eb',
+                  borderRadius: 12,
+                  padding: 12,
+                  cursor: 'pointer',
+                  background: theme === t.id ? '#fff1f2' : '#fff',
+                  boxShadow: theme === t.id ? '0 4px 14px rgba(236,72,153,0.25)' : 'none',
+                  transition: 'all 0.2s ease',
+                }}
+              >
+                <div style={{ height: 36, borderRadius: 8, background: t.bg, marginBottom: 8 }} />
+                <strong style={{ fontSize: '0.875rem', display: 'block', color: '#111827' }}>{t.name}</strong>
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* Section 1: Identity */}
         <div className={styles.sectionCard}>
           <h3>🏪 Brand & Identity</h3>
