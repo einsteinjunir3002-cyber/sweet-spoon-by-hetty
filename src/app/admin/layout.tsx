@@ -12,7 +12,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   // Don't wrap login page with admin shell
-  if (pathname === '/admin/login') {
+  if (pathname === '/login') {
     return <>{children}</>
   }
 

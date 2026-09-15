@@ -5,8 +5,8 @@ import type { NextRequest } from 'next/server'
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // Allow static assets, api/auth, and admin login page
-  if (pathname === '/admin/login' || pathname.startsWith('/api/auth')) {
+  // Allow static assets, api/auth, and login page
+  if (pathname === '/login' || pathname.startsWith('/api/auth') || pathname.startsWith('/_next') || pathname.includes('.')) {
     return NextResponse.next()
   }
 
@@ -18,13 +18,15 @@ export async function middleware(request: NextRequest) {
     })
 
     if (!token) {
-      const loginUrl = new URL('/admin/login', request.url)
+      const loginUrl = new URL('/login', request.url)
       loginUrl.searchParams.set('callbackUrl', pathname)
       return NextResponse.redirect(loginUrl)
     }
 
     if (token.role !== 'OWNER' && token.role !== 'ADMIN') {
-      return NextResponse.redirect(new URL('/admin/login', request.url))
+      const loginUrl = new URL('/login', request.url)
+      loginUrl.searchParams.set('callbackUrl', pathname)
+      return NextResponse.redirect(loginUrl)
     }
   }
 
