@@ -45,7 +45,19 @@ async function getHomeData() {
 }
 
 export default async function HomePage() {
-  const { settings, socialLinks, featuredProducts, categories } = await getHomeData()
+  let homeData = {
+    settings: null as any,
+    socialLinks: null as any,
+    featuredProducts: [] as any[],
+    categories: [] as any[],
+  }
+  try {
+    homeData = await getHomeData()
+  } catch (err) {
+    console.error('HomePage getHomeData error:', err)
+  }
+
+  const { settings, socialLinks, featuredProducts, categories } = homeData
 
   // Show coming soon page if enabled
   if (settings?.comingSoonEnabled) {

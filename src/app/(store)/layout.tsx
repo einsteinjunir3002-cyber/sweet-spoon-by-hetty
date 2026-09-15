@@ -23,7 +23,11 @@ export default async function StoreLayout({
 }: {
   children: React.ReactNode
 }) {
-  const { settings, socialLinks } = await getLayoutData()
+  let layoutData = { settings: null as any, socialLinks: null as any }
+  try {
+    layoutData = await getLayoutData()
+  } catch {}
+  const { settings, socialLinks } = layoutData
 
   return (
     <>
