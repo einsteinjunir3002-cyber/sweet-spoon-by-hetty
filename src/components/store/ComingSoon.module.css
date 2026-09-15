@@ -1,0 +1,202 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  background: linear-gradient(135deg, #fff5f7 0%, #fff0f3 40%, #fde8f0 100%);
+  overflow: hidden;
+  padding: var(--spacing-8);
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  max-width: 600px;
+  width: 100%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-6);
+}
+
+.logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.logoMain {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 700;
+  color: var(--brand-primary);
+  font-style: italic;
+  line-height: 1;
+}
+
+.logoSub {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-gray-500);
+}
+
+.tagline {
+  font-size: var(--text-base);
+  color: var(--color-gray-600);
+  font-style: italic;
+}
+
+.heading {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  color: var(--color-gray-900);
+  line-height: 1.1;
+}
+
+.message {
+  font-size: var(--text-lg);
+  color: var(--color-gray-600);
+  line-height: 1.7;
+  max-width: 450px;
+}
+
+/* Countdown */
+.countdown {
+  display: flex;
+  gap: var(--spacing-4);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.countdownItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--color-white);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-4) var(--spacing-6);
+  box-shadow: var(--shadow-md);
+  min-width: 80px;
+  border: 1px solid var(--color-pink-100);
+}
+
+.countdownValue {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700;
+  color: var(--brand-primary);
+  line-height: 1;
+}
+
+.countdownLabel {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-gray-500);
+  margin-top: var(--spacing-1);
+}
+
+/* CTAs */
+.ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-3);
+  justify-content: center;
+}
+
+/* Social */
+.social {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-3);
+}
+
+.social p {
+  font-size: var(--text-sm);
+  color: var(--color-gray-500);
+}
+
+.socialLinks {
+  display: flex;
+  gap: var(--spacing-3);
+}
+
+.socialLink {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-2) var(--spacing-4);
+  background: var(--color-white);
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-full);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--color-gray-700);
+  transition: all var(--transition-base);
+  text-decoration: none;
+}
+
+.socialLink:hover {
+  border-color: var(--brand-primary);
+  color: var(--brand-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.adminLink {
+  font-size: var(--text-xs);
+  color: transparent;
+  user-select: none;
+  margin-top: var(--spacing-4);
+}
+
+.adminLink:hover {
+  color: var(--color-gray-300);
+}
+
+/* Background decorations */
+.bgDecor {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.bgCircle1 {
+  position: absolute;
+  top: -10%;
+  right: -5%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, var(--color-pink-100) 0%, transparent 70%);
+  border-radius: 50%;
+  opacity: 0.5;
+}
+
+.bgCircle2 {
+  position: absolute;
+  bottom: -10%;
+  left: -5%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, var(--color-cream-200) 0%, transparent 70%);
+  border-radius: 50%;
+  opacity: 0.6;
+}
+
+.bgCircle3 {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, var(--color-pink-50) 0%, transparent 70%);
+  border-radius: 50%;
+  opacity: 0.3;
+}

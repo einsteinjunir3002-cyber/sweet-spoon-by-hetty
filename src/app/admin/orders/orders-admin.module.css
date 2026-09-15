@@ -1,0 +1,274 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.tabsRow {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+}
+
+.tabBtn {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  padding: 0.6rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s;
+}
+
+.tabBtn:hover {
+  border-color: #7e22ce;
+  color: #7e22ce;
+}
+
+.activeTab {
+  background: #7e22ce !important;
+  color: #ffffff !important;
+  border-color: #7e22ce !important;
+}
+
+.tabCount {
+  background: rgba(0, 0, 0, 0.1);
+  padding: 0.15rem 0.45rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+}
+
+.ordersList {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.orderCard {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+}
+
+.cardHeader {
+  background: #f8fafc;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.orderNum {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #7e22ce;
+  font-family: monospace;
+  margin-right: 1rem;
+}
+
+.dateText {
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.35rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.badgeSuccess {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.badgeWarning {
+  background: #fef9c3;
+  color: #a16207;
+}
+
+.badgeInfo {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.badgeDanger {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.badgeDefault {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.cardBody {
+  padding: 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+}
+
+.infoCol h4 {
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 0.35rem;
+}
+
+.infoCol p {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.9rem;
+  color: #334155;
+}
+
+.infoCol p a {
+  color: #7e22ce;
+  text-decoration: underline;
+}
+
+.notesText {
+  background: #fff7ed;
+  border-left: 3px solid #f97316;
+  padding: 0.5rem;
+  border-radius: 4px;
+  font-size: 0.85rem !important;
+}
+
+.whatsappNoticeBtn {
+  display: inline-block;
+  margin-top: 0.5rem;
+  background: #dcfce7;
+  color: #15803d;
+  border: 1px solid #86efac;
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+
+.whatsappNoticeBtn:hover {
+  background: #bbf7d0;
+}
+
+.itemList {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.itemList li {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: #1e293b;
+}
+
+.totalsBox {
+  border-top: 1px dashed #cbd5e1;
+  padding-top: 0.5rem;
+  font-size: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.totalsBox div {
+  display: flex;
+  justify-content: space-between;
+  color: #64748b;
+}
+
+.discountRow {
+  color: #dc2626 !important;
+}
+
+.grandTotal {
+  font-size: 1rem !important;
+  color: #0f172a !important;
+  font-weight: 800;
+  margin-top: 0.35rem;
+  padding-top: 0.35rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.cardFooter {
+  background: #f8fafc;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.cardFooter span {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #475569;
+}
+
+.statusButtons {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.statusBtn {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.statusBtn:hover:not(:disabled) {
+  border-color: #7e22ce;
+  color: #7e22ce;
+}
+
+.statusBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.activeStatusBtn {
+  background: #7e22ce !important;
+  color: #ffffff !important;
+  border-color: #7e22ce !important;
+}
+
+.loading, .emptyState {
+  text-align: center;
+  padding: 3rem;
+  background: #ffffff;
+  border-radius: 16px;
+  color: #64748b;
+}

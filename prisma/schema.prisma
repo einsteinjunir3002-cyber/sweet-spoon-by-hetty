@@ -1,0 +1,701 @@
+// Sweet Spoon by Hetty — Complete Database Schema
+// Using PostgreSQL via Supabase + Prisma ORM
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ============================================================
+// ENUMS
+// ============================================================
+
+enum Role {
+  OWNER
+  CUSTOMER
+}
+
+enum OrderStatus {
+  PENDING
+  PAYMENT_PENDING
+  PAID
+  CONFIRMED
+  PREPARING
+  READY
+  OUT_FOR_DELIVERY
+  DELIVERED
+  CANCELLED
+  REFUNDED
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  CANCELLED
+  EXPIRED
+  REFUNDED
+}
+
+enum PaymentMethod {
+  MOBILE_MONEY
+  CARD
+  CASH_ON_DELIVERY
+  WHATSAPP_ORDER
+}
+
+enum DeliveryType {
+  DELIVERY
+  PICKUP
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+}
+
+// ============================================================
+// USER & AUTH
+// ============================================================
+
+model User {
+  id                String    @id @default(cuid())
+  username          String?   @unique
+  email             String    @unique
+  emailVerified     DateTime?
+  password          String    // bcrypt hashed
+  name              String?
+  phone             String?
+  role              Role      @default(CUSTOMER)
+  isActive          Boolean   @default(true)
+  mustChangePassword Boolean  @default(false)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  // Relations
+  accounts     Account[]
+  sessions     Session[]
+  orders       Order[]
+  addresses    CustomerAddress[]
+  reviews      Review[]
+  cart         Cart?
+  notifications UserNotification[]
+  wishlist     WishlistItem[]
+
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  email     String
+  token     String   @unique
+  expires   DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@map("password_reset_tokens")
+}
+
+// ============================================================
+// PRODUCTS & CATEGORIES
+// ============================================================
+
+model Category {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  slug        String    @unique
+  description String?   @db.Text
+  image       String?
+  isVisible   Boolean   @default(true)
+  sortOrder   Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  products Product[]
+
+  @@map("categories")
+}
+
+model Product {
+  id               String    @id @default(cuid())
+  name             String
+  slug             String    @unique
+  description      String?   @db.Text
+  shortDescription String?
+  price            Float
+  compareAtPrice   Float?    // Original price before discount
+  categoryId       String?
+  isPublished      Boolean   @default(false)
+  isFeatured       Boolean   @default(false)
+  isArchived       Boolean   @default(false)
+  tags             String[]  @default([])
+  
+  // Product attributes (editable by owner)
+  size             String?   // e.g. "150ml"
+  weight           String?
+  features         String[]  @default([]) // e.g. ["Probiotic", "100% Natural", "No Preservatives"]
+  
+  // SEO
+  metaTitle        String?
+  metaDescription  String?
+  
+  sortOrder        Int       @default(0)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  // Relations
+  category    Category?       @relation(fields: [categoryId], references: [id])
+  images      ProductImage[]
+  variants    ProductVariant[]
+  inventory   Inventory?
+  orderItems  OrderItem[]
+  cartItems   CartItem[]
+  reviews     Review[]
+  wishlist    WishlistItem[]
+
+  @@map("products")
+}
+
+model ProductImage {
+  id        String  @id @default(cuid())
+  productId String
+  url       String
+  altText   String?
+  isMain    Boolean @default(false)
+  sortOrder Int     @default(0)
+  createdAt DateTime @default(now())
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@map("product_images")
+}
+
+model ProductVariant {
+  id        String  @id @default(cuid())
+  productId String
+  name      String  // e.g. "Size", "Flavor"
+  value     String  // e.g. "150ml", "Strawberry"
+  price     Float?  // If different from base product price
+  sku       String?
+  isDefault Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  product   Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  cartItems CartItem[]
+  orderItems OrderItem[]
+
+  @@map("product_variants")
+}
+
+// ============================================================
+// INVENTORY
+// ============================================================
+
+model Inventory {
+  id              String   @id @default(cuid())
+  productId       String   @unique
+  quantity        Int      @default(0)
+  lowStockThreshold Int    @default(5)
+  trackStock      Boolean  @default(true)
+  allowBackorder  Boolean  @default(false)
+  updatedAt       DateTime @updatedAt
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@map("inventory")
+}
+
+// ============================================================
+// CART
+// ============================================================
+
+model Cart {
+  id        String     @id @default(cuid())
+  userId    String?    @unique
+  sessionId String?    @unique // For guest carts
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  user      User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items     CartItem[]
+
+  @@map("carts")
+}
+
+model CartItem {
+  id        String  @id @default(cuid())
+  cartId    String
+  productId String
+  variantId String?
+  quantity  Int     @default(1)
+  notes     String? // Customer notes for this item
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  cart     Cart           @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  product  Product        @relation(fields: [productId], references: [id], onDelete: Cascade)
+  variant  ProductVariant? @relation(fields: [variantId], references: [id])
+
+  @@map("cart_items")
+}
+
+// ============================================================
+// ORDERS
+// ============================================================
+
+model Order {
+  id              String        @id @default(cuid())
+  orderNumber     String        @unique // Human-readable: SS-2024-001
+  userId          String?
+  
+  // Customer info (stored separately in case guest checkout)
+  customerName    String
+  customerEmail   String?
+  customerPhone   String
+  
+  // Delivery
+  deliveryType    DeliveryType  @default(DELIVERY)
+  deliveryAddress String?
+  deliveryArea    String?
+  deliveryZoneId  String?
+  deliveryFee     Float         @default(0)
+  deliveryNotes   String?
+  estimatedTime   String?
+  
+  // Pricing
+  subtotal        Float
+  discountAmount  Float         @default(0)
+  couponId        String?
+  couponCode      String?
+  total           Float
+  
+  // Order state
+  status          OrderStatus   @default(PENDING)
+  orderNotes      String?
+  
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  // Relations
+  user         User?        @relation(fields: [userId], references: [id])
+  deliveryZone DeliveryZone? @relation(fields: [deliveryZoneId], references: [id])
+  coupon       Coupon?       @relation(fields: [couponId], references: [id])
+  items        OrderItem[]
+  payment      Payment?
+  statusHistory OrderStatusHistory[]
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  productId String
+  variantId String?
+  name      String  // Snapshot at time of order
+  price     Float   // Snapshot at time of order
+  quantity  Int
+  notes     String?
+
+  order   Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product        @relation(fields: [productId], references: [id])
+  variant ProductVariant? @relation(fields: [variantId], references: [id])
+
+  @@map("order_items")
+}
+
+model OrderStatusHistory {
+  id        String      @id @default(cuid())
+  orderId   String
+  status    OrderStatus
+  note      String?
+  createdAt DateTime    @default(now())
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@map("order_status_history")
+}
+
+// ============================================================
+// PAYMENTS
+// ============================================================
+
+model Payment {
+  id              String        @id @default(cuid())
+  orderId         String        @unique
+  reference       String        @unique // Paystack transaction reference
+  amount          Float
+  currency        String        @default("GHS")
+  method          PaymentMethod
+  status          PaymentStatus @default(PENDING)
+  paystackData    Json?         // Full Paystack response stored securely
+  verifiedAt      DateTime?
+  webhookReceivedAt DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@map("payments")
+}
+
+// ============================================================
+// DELIVERY ZONES
+// ============================================================
+
+model DeliveryZone {
+  id             String  @id @default(cuid())
+  name           String  // e.g. "Ho Central"
+  areas          String[] @default([]) // e.g. ["Ho", "Mawuli", "Bankoe"]
+  fee            Float
+  estimatedTime  String? // e.g. "30-60 minutes"
+  minimumOrder   Float?
+  isActive       Boolean @default(true)
+  sortOrder      Int     @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  orders Order[]
+
+  @@map("delivery_zones")
+}
+
+// ============================================================
+// ADDRESSES
+// ============================================================
+
+model CustomerAddress {
+  id          String  @id @default(cuid())
+  userId      String
+  label       String? // e.g. "Home", "Work"
+  name        String
+  phone       String
+  address     String
+  area        String?
+  isDefault   Boolean @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("customer_addresses")
+}
+
+// ============================================================
+// PROMOTIONS & COUPONS
+// ============================================================
+
+model Coupon {
+  id             String    @id @default(cuid())
+  code           String    @unique
+  description    String?
+  type           String    // "PERCENTAGE" | "FIXED"
+  value          Float     // e.g. 10 for 10% or GH₵10
+  minimumOrder   Float?
+  maximumDiscount Float?   // For percentage coupons
+  usageLimit     Int?
+  usageCount     Int       @default(0)
+  perUserLimit   Int?
+  categoryId     String?
+  productId      String?
+  isActive       Boolean   @default(true)
+  startDate      DateTime?
+  endDate        DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  orders Order[]
+
+  @@map("coupons")
+}
+
+model Promotion {
+  id          String    @id @default(cuid())
+  title       String
+  description String?
+  imageUrl    String?
+  linkUrl     String?
+  type        String    // "BANNER" | "POPUP" | "FEATURED"
+  isActive    Boolean   @default(true)
+  startDate   DateTime?
+  endDate     DateTime?
+  sortOrder   Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("promotions")
+}
+
+// ============================================================
+// REVIEWS
+// ============================================================
+
+model Review {
+  id         String   @id @default(cuid())
+  productId  String
+  userId     String?
+  orderId    String?
+  name       String
+  email      String?
+  rating     Int      // 1-5
+  title      String?
+  body       String   @db.Text
+  isApproved Boolean  @default(false)
+  isVisible  Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user    User?   @relation(fields: [userId], references: [id])
+
+  @@map("reviews")
+}
+
+// ============================================================
+// MEDIA LIBRARY
+// ============================================================
+
+model MediaFile {
+  id        String    @id @default(cuid())
+  filename  String
+  url       String
+  altText   String?
+  mimeType  String
+  size      Int       // bytes
+  width     Int?
+  height    Int?
+  type      MediaType @default(IMAGE)
+  folder    String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@map("media_files")
+}
+
+// ============================================================
+// CONTACT MESSAGES
+// ============================================================
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String?
+  phone     String?
+  subject   String?
+  message   String   @db.Text
+  isRead    Boolean  @default(false)
+  isArchived Boolean @default(false)
+  createdAt DateTime @default(now())
+
+  @@map("contact_messages")
+}
+
+// ============================================================
+// NOTIFICATIONS
+// ============================================================
+
+model UserNotification {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  body      String
+  type      String   // "ORDER" | "PAYMENT" | "STOCK" | "REVIEW" | "SYSTEM"
+  isRead    Boolean  @default(false)
+  data      Json?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_notifications")
+}
+
+// ============================================================
+// FAQ
+// ============================================================
+
+model FAQ {
+  id        String   @id @default(cuid())
+  question  String
+  answer    String   @db.Text
+  category  String?
+  isVisible Boolean  @default(true)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("faqs")
+}
+
+// ============================================================
+// POLICY PAGES
+// ============================================================
+
+model PolicyPage {
+  id          String   @id @default(cuid())
+  type        String   @unique // "PRIVACY" | "TERMS" | "DELIVERY" | "REFUND"
+  title       String
+  content     String   @db.Text
+  needsReview Boolean  @default(true) // Flag for owner to review
+  updatedAt   DateTime @updatedAt
+  createdAt   DateTime @default(now())
+
+  @@map("policy_pages")
+}
+
+// ============================================================
+// SITE SETTINGS (Singleton - only one row)
+// ============================================================
+
+model SiteSettings {
+  id                String   @id @default(cuid())
+  
+  // Business identity
+  businessName      String   @default("Sweet Spoon by Hetty")
+  tagline           String?
+  logoUrl           String?
+  faviconUrl        String?
+  
+  // Contact
+  phone1            String?  @default("0535372613")
+  phone2            String?  @default("0508168299")
+  whatsappNumber    String?  @default("0535372613")
+  email             String?
+  address           String?
+  city              String?  @default("Ho")
+  region            String?  @default("Volta Region, Ghana")
+  
+  // Homepage content
+  heroTitle         String?  @default("Freshly Made. Naturally Delicious.")
+  heroSubtitle      String?
+  heroImageUrl      String?
+  heroCta1Text      String?  @default("Shop Now")
+  heroCta2Text      String?  @default("Order on WhatsApp")
+  
+  // About section
+  aboutTitle        String?
+  aboutText         String?  @db.Text
+  aboutImageUrl     String?
+  
+  // Features (why choose us)
+  featuresJson      Json?    // Array of {icon, title, description}
+  
+  // Business hours
+  businessHoursJson Json?    // Array of {day, open, close, isClosed}
+  
+  // SEO
+  seoTitle          String?
+  seoDescription    String?
+  seoKeywords       String?
+  ogImageUrl        String?
+  
+  // Store settings
+  currencyCode      String   @default("GHS")
+  currencySymbol    String   @default("GH₵")
+  allowGuestCheckout Boolean @default(true)
+  requireAccountForReview Boolean @default(true)
+  enableReviews     Boolean  @default(true)
+  enableWishlist    Boolean  @default(true)
+  
+  // Coming soon mode
+  comingSoonEnabled Boolean  @default(false)
+  launchDate        DateTime?
+  comingSoonMessage String?
+  
+  // Pickup
+  pickupEnabled     Boolean  @default(false)
+  pickupAddress     String?
+  pickupInstructions String?
+  
+  // Notifications
+  emailNotificationsEnabled Boolean @default(false)
+  
+  // Announcements
+  announcementText   String?
+  announcementEnabled Boolean @default(false)
+  
+  updatedAt         DateTime @updatedAt
+  createdAt         DateTime @default(now())
+
+  @@map("site_settings")
+}
+
+// ============================================================
+// SOCIAL LINKS (Singleton)
+// ============================================================
+
+model SocialLinks {
+  id        String   @id @default(cuid())
+  tiktok    String?  @default("@sweetspoonbyherty")
+  instagram String?
+  facebook  String?
+  whatsapp  String?  @default("0535372613")
+  youtube   String?
+  twitter   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("social_links")
+}
+
+// ============================================================
+// WISHLIST
+// ============================================================
+
+model WishlistItem {
+  id        String   @id @default(cuid())
+  userId    String
+  productId String
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+  @@map("wishlist_items")
+}

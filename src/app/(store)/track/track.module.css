@@ -1,0 +1,254 @@
+.main {
+  min-height: calc(100vh - 300px);
+  background: #fafaf8;
+  padding: 4rem 1.5rem;
+}
+
+.trackContainer {
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.searchBox {
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 2.5rem;
+  border: 1px solid #f0eee9;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+}
+
+.searchBox h1 {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #1e1b4b;
+  margin: 0 0 0.5rem 0;
+}
+
+.searchBox p {
+  color: #6b7280;
+  margin-bottom: 1.5rem;
+}
+
+.form {
+  display: flex;
+  gap: 0.75rem;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.input {
+  flex: 1;
+  padding: 0.875rem 1.25rem;
+  border-radius: 9999px;
+  border: 1px solid #d1d5db;
+  font-size: 1rem;
+}
+
+.searchBtn {
+  background: linear-gradient(135deg, #7e22ce, #6b21a8);
+  color: #ffffff;
+  border: none;
+  padding: 0.875rem 1.75rem;
+  border-radius: 9999px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.errorAlert {
+  background: #fee2e2;
+  border: 1px solid #fca5a5;
+  color: #b91c1c;
+  padding: 1rem;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.resultCard {
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 2.5rem;
+  border: 1px solid #f0eee9;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.cardHeader h2 {
+  margin: 0;
+  font-size: 1.75rem;
+  font-family: monospace;
+  color: #7e22ce;
+}
+
+.orderLabel {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  color: #64748b;
+  font-weight: 700;
+}
+
+.dateInfo {
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.stepper {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  margin-bottom: 3rem;
+  padding: 0 1rem;
+}
+
+.stepper::before {
+  content: '';
+  position: absolute;
+  top: 20px;
+  left: 40px;
+  right: 40px;
+  height: 4px;
+  background: #e2e8f0;
+  z-index: 1;
+}
+
+.stepItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  position: relative;
+  z-index: 2;
+}
+
+.stepCircle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #e2e8f0;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  transition: all 0.3s ease;
+}
+
+.stepCompleted .stepCircle {
+  background: #7e22ce;
+  color: #ffffff;
+}
+
+.stepCurrent .stepCircle {
+  background: #a855f7;
+  color: #ffffff;
+  box-shadow: 0 0 0 6px rgba(168, 85, 247, 0.2);
+}
+
+.stepLabel {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #64748b;
+  text-align: center;
+}
+
+.stepCompleted .stepLabel {
+  color: #7e22ce;
+}
+
+.detailsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  background: #f8fafc;
+  padding: 1.5rem;
+  border-radius: 16px;
+  margin-bottom: 1.5rem;
+}
+
+.col h4 {
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  color: #64748b;
+  margin-top: 0;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 0.5rem;
+}
+
+.col p {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.9rem;
+  color: #334155;
+}
+
+.itemsList {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem 0;
+}
+
+.itemsList li {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  margin-bottom: 0.35rem;
+}
+
+.totalRow {
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid #cbd5e1;
+  padding-top: 0.5rem;
+  font-weight: 800;
+  font-size: 1rem;
+  color: #0f172a;
+}
+
+.supportFooter {
+  text-align: center;
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+.supportFooter a {
+  color: #16a34a;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.loading {
+  text-align: center;
+  padding: 3rem;
+  color: #64748b;
+}
+
+@media (max-width: 650px) {
+  .stepper {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .stepper::before {
+    display: none;
+  }
+
+  .stepItem {
+    flex-direction: row;
+  }
+
+  .detailsGrid {
+    grid-template-columns: 1fr;
+  }
+}

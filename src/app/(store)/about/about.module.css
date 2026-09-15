@@ -1,0 +1,178 @@
+.aboutPage {
+  background: #fafaf8;
+  padding-bottom: 5rem;
+}
+
+.heroSection {
+  background: linear-gradient(135deg, #fdf4ff 0%, #fae8ff 100%);
+  padding: 5rem 1.5rem;
+  text-align: center;
+  border-bottom: 1px solid #f0abfc;
+}
+
+.tagline {
+  display: inline-block;
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: #7e22ce;
+  background: rgba(126, 34, 206, 0.1);
+  padding: 0.35rem 0.85rem;
+  border-radius: 9999px;
+  margin-bottom: 1rem;
+}
+
+.heroTitle {
+  font-size: clamp(2rem, 5vw, 3.25rem);
+  font-weight: 900;
+  color: #1e1b4b;
+  margin: 0 0 1rem 0;
+}
+
+.heroSub {
+  font-size: 1.15rem;
+  color: #6b21a8;
+  max-width: 650px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.storySection {
+  padding: 5rem 1.5rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: center;
+}
+
+.storyContent h2 {
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: #1c1917;
+  margin-bottom: 1.25rem;
+}
+
+.storyContent p {
+  color: #4b5563;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  margin-bottom: 1.25rem;
+}
+
+.highlightsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.highlightCard {
+  background: #ffffff;
+  padding: 1.25rem;
+  border-radius: 16px;
+  border: 1px solid #f3e8ff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.highlightCard h4 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin: 0.5rem 0 0.25rem;
+}
+
+.highlightCard p {
+  font-size: 0.8rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+.highlightIcon {
+  font-size: 1.75rem;
+}
+
+.storyImageWrapper {
+  position: relative;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+}
+
+.storyImg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.productsBanner {
+  background: #1e1b4b;
+  color: #ffffff;
+  padding: 5rem 1.5rem;
+  text-align: center;
+}
+
+.productsBanner h2 {
+  font-size: 2.25rem;
+  font-weight: 800;
+  margin-bottom: 3rem;
+}
+
+.rangeGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.rangeCard {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  padding: 2rem;
+  text-align: left;
+}
+
+.rangeCard h3 {
+  font-size: 1.35rem;
+  color: #f472b6;
+  margin-top: 0;
+}
+
+.rangeCard p {
+  color: #cbd5e1;
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+.ctaWrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.ctaBtn {
+  background: linear-gradient(135deg, #a855f7, #7e22ce);
+  color: #ffffff;
+  padding: 1rem 2.25rem;
+  border-radius: 9999px;
+  font-weight: 800;
+  font-size: 1.1rem;
+  text-decoration: none;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.ctaBtn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(168, 85, 247, 0.4);
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .highlightsGrid {
+    grid-template-columns: 1fr;
+  }
+}
