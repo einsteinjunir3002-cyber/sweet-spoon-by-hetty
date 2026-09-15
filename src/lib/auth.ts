@@ -4,6 +4,8 @@ import bcrypt from 'bcryptjs'
 import { db } from '@/lib/db'
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  secret: process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET || 'sweet-spoon-secret-key-32-chars-minimum-debbie-2026',
+  trustHost: true,
   session: {
     strategy: 'jwt',
     maxAge: 30 * 24 * 60 * 60, // 30 days
@@ -55,31 +57,33 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         }
 
         // 2. Database User Auth (if database is connected)
-        try {
-          const user = await db.user.findFirst({
-            where: {
-              OR: [
-                { email: identifier },
-                { username: identifier },
-              ],
-              isActive: true,
-            },
-          })
+        if (process.env.DATABASE_URL) {
+          try {
+            const user = await db.user.findFirst({
+              where: {
+                OR: [
+                  { email: identifier },
+                  { username: identifier },
+                ],
+                isActive: true,
+              },
+            })
 
-          if (user) {
-            const isPasswordValid = await bcrypt.compare(password, user.password)
-            if (isPasswordValid) {
-              return {
-                id: user.id,
-                email: user.email,
-                name: user.name ?? user.username,
-                role: user.role,
-                mustChangePassword: user.mustChangePassword,
+            if (user) {
+              const isPasswordValid = await bcrypt.compare(password, user.password)
+              if (isPasswordValid) {
+                return {
+                  id: user.id,
+                  email: user.email,
+                  name: user.name ?? user.username,
+                  role: user.role,
+                  mustChangePassword: user.mustChangePassword,
+                }
               }
             }
+          } catch (dbError) {
+            console.warn('Database user auth fallback:', dbError)
           }
-        } catch (dbError) {
-          console.warn('Database user auth fallback:', dbError)
         }
 
         throw new Error('Invalid email/username or password')
