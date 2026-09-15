@@ -27,8 +27,10 @@ export function ProductCard({ product, currencySymbol = 'GH₵' }: ProductCardPr
     : false
   const isOnSale = product.compareAtPrice && product.compareAtPrice > product.price
 
+  const isFeaturesArray = Array.isArray(product.features)
+
   return (
-    <Link href={`/product/${product.slug}`} className={styles.card} aria-label={product.name}>
+    <Link href={`/products/${product.slug}`} className={styles.card} aria-label={product.name}>
       {/* Image */}
       <div className={styles.imageWrap}>
         {mainImage ? (
@@ -68,9 +70,9 @@ export function ProductCard({ product, currencySymbol = 'GH₵' }: ProductCardPr
         )}
 
         {/* Features (e.g. "150ml • Probiotic • Natural") */}
-        {product.features && product.features.length > 0 && (
+        {isFeaturesArray && product.features!.length > 0 && (
           <div className={styles.features}>
-            {product.features.slice(0, 3).map((f, i) => (
+            {product.features!.slice(0, 3).map((f, i) => (
               <span key={i} className={styles.featureTag}>{f}</span>
             ))}
           </div>
@@ -81,11 +83,11 @@ export function ProductCard({ product, currencySymbol = 'GH₵' }: ProductCardPr
       <div className={styles.footer}>
         <div className={styles.pricing}>
           <span className={styles.price}>
-            {currencySymbol}{product.price.toFixed(2)}
+            {currencySymbol}{(typeof product.price === 'number' ? product.price : Number(product.price || 0)).toFixed(2)}
           </span>
           {isOnSale && (
             <span className={styles.comparePrice}>
-              {currencySymbol}{product.compareAtPrice!.toFixed(2)}
+              {currencySymbol}{(typeof product.compareAtPrice === 'number' ? product.compareAtPrice : Number(product.compareAtPrice || 0)).toFixed(2)}
             </span>
           )}
         </div>
