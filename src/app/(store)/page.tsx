@@ -63,12 +63,21 @@ export default async function HomePage() {
   const cleanedWhatsapp = rawWhatsapp.replace(/[^0-9]/g, '').replace(/^0/, '')
   const whatsappUrl = `https://wa.me/233${cleanedWhatsapp || '535372613'}?text=${encodeURIComponent('Hello! I\'d like to place an order.')}`
 
-  const features = (settings?.featuresJson as Array<{ icon: string; title: string; description: string }> | null) ?? [
+  let features = [
     { icon: '🌿', title: 'Freshly Made Daily', description: 'Every batch is made fresh daily — no stockpiling, no compromise.' },
     { icon: '🦠', title: 'Probiotic Goodness', description: 'Packed with beneficial live cultures to support your gut health.' },
     { icon: '✨', title: '100% Natural', description: 'No preservatives, no artificial additives — just real ingredients.' },
     { icon: '🥛', title: 'Unsweetened Option', description: 'Clean, pure yogurt with no added sugar for the health-conscious.' },
   ]
+
+  if (Array.isArray(settings?.featuresJson)) {
+    features = settings.featuresJson as Array<{ icon: string; title: string; description: string }>
+  } else if (typeof settings?.featuresJson === 'string') {
+    try {
+      const parsed = JSON.parse(settings.featuresJson)
+      if (Array.isArray(parsed)) features = parsed
+    } catch {}
+  }
 
   return (
     <div className={styles.page}>
