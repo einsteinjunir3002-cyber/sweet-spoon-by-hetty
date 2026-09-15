@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 
+export const dynamic = 'force-dynamic'
+
 // GET /api/settings/public - Public site settings (no auth required)
 export async function GET(_request: NextRequest) {
   try {

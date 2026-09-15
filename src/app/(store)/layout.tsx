@@ -4,6 +4,8 @@ import { WhatsAppFloat } from '@/components/store/WhatsAppFloat'
 import { AnnouncementBar } from '@/components/store/AnnouncementBar'
 import { db } from '@/lib/db'
 
+export const dynamic = 'force-dynamic'
+
 async function getLayoutData() {
   try {
     const [settings, socialLinks] = await Promise.all([

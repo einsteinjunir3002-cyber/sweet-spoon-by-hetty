@@ -3,6 +3,8 @@ import { db } from '@/lib/db'
 import { verifyPayment } from '@/lib/paystack'
 import { PaymentMethod } from '@prisma/client'
 
+export const dynamic = 'force-dynamic'
+
 /**
  * GET /api/checkout/verify?ref=REFERENCE
  * Called after customer returns from Paystack

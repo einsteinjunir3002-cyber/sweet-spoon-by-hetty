@@ -6,6 +6,8 @@ import { ProductCard } from '@/components/store/ProductCard'
 import { ComingSoon } from '@/components/store/ComingSoon'
 import styles from './page.module.css'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'Sweet Spoon by Hetty — Freshly Made Yogurt & Brukina',
   description: 'Premium freshly made Greek Yogurt, Probiotic Yogurt and Brukina from Ho, Volta Region, Ghana. 100% natural, no preservatives.',
