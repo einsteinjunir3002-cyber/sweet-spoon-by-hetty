@@ -27,6 +27,7 @@ const CartContext = createContext<CartContextType | null>(null)
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([])
+  const [isLoaded, setIsLoaded] = useState(false)
 
   // Load from localStorage on mount
   useEffect(() => {
@@ -34,24 +35,38 @@ export function CartProvider({ children }: { children: ReactNode }) {
       const saved = localStorage.getItem('cart')
       if (saved) setItems(JSON.parse(saved))
     } catch {}
+    setIsLoaded(true)
   }, [])
 
-  // Sync to localStorage and dispatch event when items change
+  // Sync to localStorage when items change
   useEffect(() => {
-    localStorage.setItem('cart', JSON.stringify(items))
-    window.dispatchEvent(new Event('cart-updated'))
-  }, [items])
-
-  // Listen for external cart updates (e.g., from shop page)
-  useEffect(() => {
-    const onCartUpdated = () => {
+    if (isLoaded) {
       try {
-        const saved = localStorage.getItem('cart')
-        if (saved) setItems(JSON.parse(saved))
+        localStorage.setItem('cart', JSON.stringify(items))
       } catch {}
     }
-    window.addEventListener('cart-updated', onCartUpdated)
-    return () => window.removeEventListener('cart-updated', onCartUpdated)
+  }, [items, isLoaded])
+
+  // Listen for external cart updates (e.g. from shop page or other tabs)
+  useEffect(() => {
+    const syncCart = () => {
+      try {
+        const saved = localStorage.getItem('cart')
+        const parsed = saved ? JSON.parse(saved) : []
+        setItems((current) => {
+          // Avoid state mutation if content is identical
+          if (JSON.stringify(current) === JSON.stringify(parsed)) return current
+          return parsed
+        })
+      } catch {}
+    }
+
+    window.addEventListener('cart-updated', syncCart)
+    window.addEventListener('storage', syncCart)
+    return () => {
+      window.removeEventListener('cart-updated', syncCart)
+      window.removeEventListener('storage', syncCart)
+    }
   }, [])
 
   const addItem = useCallback((newItem: CartItem) => {
