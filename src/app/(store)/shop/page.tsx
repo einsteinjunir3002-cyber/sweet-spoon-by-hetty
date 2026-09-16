@@ -102,7 +102,7 @@ export default function ShopPage() {
       {/* Page Header */}
       <section className={styles.pageHeader}>
         <div className={styles.container}>
-          <h1>Products</h1>
+          <h1>Our Products</h1>
           <p>Freshly made daily — natural, probiotic and delicious</p>
         </div>
       </section>
