@@ -26,16 +26,19 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           throw new Error('Please enter your email/username and password')
         }
 
-        const identifier = (credentials.identifier as string).trim().toLowerCase()
+        const rawIdentifier = (credentials.identifier as string).trim()
+        const lowerIdentifier = rawIdentifier.toLowerCase()
         const password = credentials.password as string
 
-        // Database User Auth via hashed password
+        // Database User Auth via hashed password (case-insensitive for username and email)
         try {
           const user = await db.user.findFirst({
             where: {
               OR: [
-                { email: identifier },
-                { username: identifier },
+                { email: { equals: lowerIdentifier, mode: 'insensitive' } },
+                { username: { equals: rawIdentifier, mode: 'insensitive' } },
+                { username: { equals: lowerIdentifier, mode: 'insensitive' } },
+                { email: { equals: rawIdentifier, mode: 'insensitive' } },
               ],
               isActive: true,
             },
@@ -47,7 +50,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
               return {
                 id: user.id,
                 email: user.email,
-                name: user.name ?? user.username,
+                name: user.name ?? user.username ?? 'User',
                 role: user.role,
                 mustChangePassword: user.mustChangePassword,
               }
