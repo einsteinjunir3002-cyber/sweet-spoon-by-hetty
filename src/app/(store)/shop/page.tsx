@@ -3,9 +3,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import Header from '@/components/store/Header'
-import Footer from '@/components/store/Footer'
-import WhatsAppFloat from '@/components/store/WhatsAppFloat'
 import styles from './shop.module.css'
 
 interface Product {
@@ -92,118 +89,122 @@ export default function ShopPage() {
   }
 
   const getMainImage = (product: Product) => {
+    if (!Array.isArray(product?.images)) return '/placeholder-product.jpg'
     return product.images.find((i) => i.isMain)?.url || product.images[0]?.url || '/placeholder-product.jpg'
   }
 
   const isOutOfStock = (product: Product) => {
-    return product.inventory?.trackStock && product.inventory.quantity <= 0
+    return Boolean(product.inventory?.trackStock && product.inventory.quantity <= 0)
   }
 
   return (
-    <>
-      <Header />
-      <main className={styles.shopPage}>
-        {/* Page Header */}
-        <section className={styles.pageHeader}>
-          <div className={styles.container}>
-            <h1>Our Products</h1>
-            <p>Freshly made daily — natural, probiotic and delicious</p>
-          </div>
-        </section>
-
+    <div className={styles.shopPage}>
+      {/* Page Header */}
+      <section className={styles.pageHeader}>
         <div className={styles.container}>
-          {/* Filters Bar */}
-          <div className={styles.filtersBar}>
-            {/* Search */}
-            <div className={styles.searchBox}>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="11" cy="11" r="8" />
-                <line x1="21" y1="21" x2="16.65" y2="16.65" />
-              </svg>
-              <input
-                type="text"
-                placeholder="Search products..."
-                value={search}
-                onChange={(e) => { setSearch(e.target.value); setPage(1) }}
-              />
-            </div>
+          <h1>Our Products</h1>
+          <p>Freshly made daily — natural, probiotic and delicious</p>
+        </div>
+      </section>
 
-            {/* Sort */}
-            <select
-              className={styles.sortSelect}
-              value={sort}
-              onChange={(e) => { setSort(e.target.value); setPage(1) }}
-            >
-              <option value="createdAt_desc">Newest First</option>
-              <option value="price_asc">Price: Low to High</option>
-              <option value="price_desc">Price: High to Low</option>
-              <option value="name_asc">Name A-Z</option>
-            </select>
+      <div className={styles.container}>
+        {/* Filters Bar */}
+        <div className={styles.filtersBar}>
+          {/* Search */}
+          <div className={styles.searchBox}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            <input
+              type="text"
+              placeholder="Search products..."
+              value={search}
+              onChange={(e) => { setSearch(e.target.value); setPage(1) }}
+            />
           </div>
 
-          <div className={styles.shopLayout}>
-            {/* Sidebar Categories */}
-            <aside className={styles.sidebar}>
-              <h3>Categories</h3>
-              <ul className={styles.categoryList}>
-                <li>
+          {/* Sort */}
+          <select
+            className={styles.sortSelect}
+            value={sort}
+            onChange={(e) => { setSort(e.target.value); setPage(1) }}
+          >
+            <option value="createdAt_desc">Newest First</option>
+            <option value="price_asc">Price: Low to High</option>
+            <option value="price_desc">Price: High to Low</option>
+            <option value="name_asc">Name A-Z</option>
+          </select>
+        </div>
+
+        <div className={styles.shopLayout}>
+          {/* Sidebar Categories */}
+          <aside className={styles.sidebar}>
+            <h3>Categories</h3>
+            <ul className={styles.categoryList}>
+              <li>
+                <button
+                  className={selectedCategory === '' ? styles.active : ''}
+                  onClick={() => { setSelectedCategory(''); setPage(1) }}
+                >
+                  All Products
+                </button>
+              </li>
+              {categories.map((cat) => (
+                <li key={cat.id}>
                   <button
-                    className={selectedCategory === '' ? styles.active : ''}
-                    onClick={() => { setSelectedCategory(''); setPage(1) }}
+                    className={selectedCategory === cat.slug ? styles.active : ''}
+                    onClick={() => { setSelectedCategory(cat.slug); setPage(1) }}
                   >
-                    All Products
+                    {cat.name}
+                    <span className={styles.count}>{cat._count?.products ?? 0}</span>
                   </button>
                 </li>
-                {categories.map((cat) => (
-                  <li key={cat.id}>
-                    <button
-                      className={selectedCategory === cat.slug ? styles.active : ''}
-                      onClick={() => { setSelectedCategory(cat.slug); setPage(1) }}
-                    >
-                      {cat.name}
-                      <span className={styles.count}>{cat._count.products}</span>
-                    </button>
-                  </li>
+              ))}
+            </ul>
+          </aside>
+
+          {/* Products Grid */}
+          <div className={styles.productsSection}>
+            {cartMessage && (
+              <div className={styles.cartToast}>
+                <span>🛒</span> {cartMessage}
+              </div>
+            )}
+
+            {loading ? (
+              <div className={styles.loadingGrid}>
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <div key={i} className={styles.productSkeleton} />
                 ))}
-              </ul>
-            </aside>
+              </div>
+            ) : products.length === 0 ? (
+              <div className={styles.emptyState}>
+                <div className={styles.emptyIcon}>🍨</div>
+                <h3>No products found</h3>
+                <p>
+                  {search
+                    ? `No products match "${search}". Try a different search.`
+                    : 'No products available in this category yet.'}
+                </p>
+                {(search || selectedCategory) && (
+                  <button
+                    className={styles.clearBtn}
+                    onClick={() => { setSearch(''); setSelectedCategory(''); setPage(1) }}
+                  >
+                    Clear filters
+                  </button>
+                )}
+              </div>
+            ) : (
+              <>
+                <div className={styles.productGrid}>
+                  {products.map((product) => {
+                    const priceNum = typeof product.price === 'number' ? product.price : Number(product.price || 0)
+                    const compareNum = product.compareAtPrice ? (typeof product.compareAtPrice === 'number' ? product.compareAtPrice : Number(product.compareAtPrice || 0)) : null
+                    const isOnSale = Boolean(compareNum && compareNum > priceNum)
 
-            {/* Products Grid */}
-            <div className={styles.productsSection}>
-              {cartMessage && (
-                <div className={styles.cartToast}>
-                  <span>🛒</span> {cartMessage}
-                </div>
-              )}
-
-              {loading ? (
-                <div className={styles.loadingGrid}>
-                  {Array.from({ length: 6 }).map((_, i) => (
-                    <div key={i} className={styles.productSkeleton} />
-                  ))}
-                </div>
-              ) : products.length === 0 ? (
-                <div className={styles.emptyState}>
-                  <div className={styles.emptyIcon}>🍨</div>
-                  <h3>No products found</h3>
-                  <p>
-                    {search
-                      ? `No products match "${search}". Try a different search.`
-                      : 'No products available in this category yet.'}
-                  </p>
-                  {(search || selectedCategory) && (
-                    <button
-                      className={styles.clearBtn}
-                      onClick={() => { setSearch(''); setSelectedCategory(''); setPage(1) }}
-                    >
-                      Clear filters
-                    </button>
-                  )}
-                </div>
-              ) : (
-                <>
-                  <div className={styles.productGrid}>
-                    {products.map((product) => (
+                    return (
                       <div key={product.id} className={styles.productCard}>
                         <Link href={`/products/${product.slug}`} className={styles.productImageLink}>
                           <div className={styles.productImageWrapper}>
@@ -220,7 +221,7 @@ export default function ShopPage() {
                             {isOutOfStock(product) && (
                               <div className={styles.outOfStockOverlay}>Out of Stock</div>
                             )}
-                            {product.compareAtPrice && product.compareAtPrice > product.price && (
+                            {isOnSale && (
                               <span className={styles.saleBadge}>SALE</span>
                             )}
                           </div>
@@ -234,9 +235,9 @@ export default function ShopPage() {
                             <Link href={`/products/${product.slug}`}>{product.name}</Link>
                           </h3>
                           <div className={styles.productPricing}>
-                            <span className={styles.price}>GH₵{product.price.toFixed(2)}</span>
-                            {product.compareAtPrice && product.compareAtPrice > product.price && (
-                              <span className={styles.comparePrice}>GH₵{product.compareAtPrice.toFixed(2)}</span>
+                            <span className={styles.price}>GH₵{priceNum.toFixed(2)}</span>
+                            {isOnSale && compareNum !== null && (
+                              <span className={styles.comparePrice}>GH₵{compareNum.toFixed(2)}</span>
                             )}
                           </div>
                           <div className={styles.productActions}>
@@ -253,39 +254,37 @@ export default function ShopPage() {
                           </div>
                         </div>
                       </div>
-                    ))}
-                  </div>
+                    )
+                  })}
+                </div>
 
-                  {/* Pagination */}
-                  {totalPages > 1 && (
-                    <div className={styles.pagination}>
-                      <button
-                        onClick={() => setPage((p) => Math.max(1, p - 1))}
-                        disabled={page === 1}
-                        className={styles.pageBtn}
-                      >
-                        ← Prev
-                      </button>
-                      <span className={styles.pageInfo}>
-                        Page {page} of {totalPages}
-                      </span>
-                      <button
-                        onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                        disabled={page === totalPages}
-                        className={styles.pageBtn}
-                      >
-                        Next →
-                      </button>
-                    </div>
-                  )}
-                </>
-              )}
-            </div>
+                {/* Pagination */}
+                {totalPages > 1 && (
+                  <div className={styles.pagination}>
+                    <button
+                      onClick={() => setPage((p) => Math.max(1, p - 1))}
+                      disabled={page === 1}
+                      className={styles.pageBtn}
+                    >
+                      ← Prev
+                    </button>
+                    <span className={styles.pageInfo}>
+                      Page {page} of {totalPages}
+                    </span>
+                    <button
+                      onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                      disabled={page === totalPages}
+                      className={styles.pageBtn}
+                    >
+                      Next →
+                    </button>
+                  </div>
+                )}
+              </>
+            )}
           </div>
         </div>
-      </main>
-      <Footer />
-      <WhatsAppFloat />
-    </>
+      </div>
+    </div>
   )
 }

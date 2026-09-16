@@ -21,11 +21,15 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, currencySymbol = 'GH₵' }: ProductCardProps) {
-  const mainImage = product.images[0]
+  if (!product) return null
+
+  const mainImage = Array.isArray(product.images) && product.images.length > 0 ? product.images[0] : null
+  const priceNum = typeof product.price === 'number' ? product.price : Number(product.price || 0)
+  const comparePriceNum = product.compareAtPrice ? (typeof product.compareAtPrice === 'number' ? product.compareAtPrice : Number(product.compareAtPrice || 0)) : null
   const isOutOfStock = product.inventory?.trackStock
     ? (product.inventory?.quantity ?? 0) <= 0
     : false
-  const isOnSale = product.compareAtPrice && product.compareAtPrice > product.price
+  const isOnSale = Boolean(comparePriceNum && comparePriceNum > priceNum)
 
   const isFeaturesArray = Array.isArray(product.features)
 
@@ -83,11 +87,11 @@ export function ProductCard({ product, currencySymbol = 'GH₵' }: ProductCardPr
       <div className={styles.footer}>
         <div className={styles.pricing}>
           <span className={styles.price}>
-            {currencySymbol}{(typeof product.price === 'number' ? product.price : Number(product.price || 0)).toFixed(2)}
+            {currencySymbol}{priceNum.toFixed(2)}
           </span>
-          {isOnSale && (
+          {isOnSale && comparePriceNum !== null && (
             <span className={styles.comparePrice}>
-              {currencySymbol}{(typeof product.compareAtPrice === 'number' ? product.compareAtPrice : Number(product.compareAtPrice || 0)).toFixed(2)}
+              {currencySymbol}{comparePriceNum.toFixed(2)}
             </span>
           )}
         </div>

@@ -1,9 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import Header from '@/components/store/Header'
-import Footer from '@/components/store/Footer'
-import WhatsAppFloat from '@/components/store/WhatsAppFloat'
 import styles from './contact.module.css'
 
 export default function ContactPage() {
@@ -53,9 +50,7 @@ export default function ContactPage() {
   const whatsappUrl = `https://wa.me/233546686616?text=${encodeURIComponent('Hello Hetty! I would like to inquire about Sweet Spoon products or make a bulk order.')}`
 
   return (
-    <>
-      <Header />
-      <main className={styles.contactPage}>
+    <div className={styles.contactPage}>
         {/* Header */}
         <section className={styles.contactHeader}>
           <div className="container">
@@ -195,9 +190,6 @@ export default function ContactPage() {
             </form>
           </div>
         </div>
-      </main>
-      <Footer />
-      <WhatsAppFloat />
-    </>
+      </div>
   )
 }

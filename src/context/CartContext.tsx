@@ -33,7 +33,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     try {
       const saved = localStorage.getItem('cart')
-      if (saved) setItems(JSON.parse(saved))
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        if (Array.isArray(parsed)) setItems(parsed)
+      }
     } catch {}
     setIsLoaded(true)
   }, [])
@@ -53,11 +56,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
       try {
         const saved = localStorage.getItem('cart')
         const parsed = saved ? JSON.parse(saved) : []
-        setItems((current) => {
-          // Avoid state mutation if content is identical
-          if (JSON.stringify(current) === JSON.stringify(parsed)) return current
-          return parsed
-        })
+        if (Array.isArray(parsed)) {
+          setItems((current) => {
+            // Avoid state mutation if content is identical
+            if (JSON.stringify(current) === JSON.stringify(parsed)) return current
+            return parsed
+          })
+        }
       } catch {}
     }
 
@@ -110,8 +115,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setItems([])
   }, [])
 
-  const itemCount = items.reduce((s, i) => s + i.quantity, 0)
-  const total = items.reduce((s, i) => s + i.price * i.quantity, 0)
+  const safeItems = Array.isArray(items) ? items : []
+  const itemCount = safeItems.reduce((s, i) => s + (Number(i?.quantity) || 0), 0)
+  const total = safeItems.reduce((s, i) => s + (Number(i?.price) || 0) * (Number(i?.quantity) || 0), 0)
 
   return (
     <CartContext.Provider

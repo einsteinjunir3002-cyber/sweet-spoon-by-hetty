@@ -3,9 +3,6 @@
 import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import Header from '@/components/store/Header'
-import Footer from '@/components/store/Footer'
-import WhatsAppFloat from '@/components/store/WhatsAppFloat'
 import styles from './track.module.css'
 
 interface OrderDetails {
@@ -180,17 +177,12 @@ function TrackContent() {
 
 export default function TrackPage() {
   return (
-    <>
-      <Header />
-      <main className={styles.main}>
-        <div className="container">
-          <Suspense fallback={<div className={styles.loading}>Loading tracking page...</div>}>
-            <TrackContent />
-          </Suspense>
-        </div>
-      </main>
-      <Footer />
-      <WhatsAppFloat />
-    </>
+    <div className={styles.main}>
+      <div className="container">
+        <Suspense fallback={<div className={styles.loading}>Loading tracking page...</div>}>
+          <TrackContent />
+        </Suspense>
+      </div>
+    </div>
   )
 }

@@ -4,9 +4,6 @@ import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import Header from '@/components/store/Header'
-import Footer from '@/components/store/Footer'
-import WhatsAppFloat from '@/components/store/WhatsAppFloat'
 import styles from './product.module.css'
 
 interface ProductVariant {
@@ -29,11 +26,11 @@ interface Product {
   size?: string
   isFeatured: boolean
   isPublished: boolean
-  images: { id: string; url: string; altText?: string; isMain: boolean }[]
+  images?: { id: string; url: string; altText?: string; isMain: boolean }[]
   category?: { name: string; slug: string }
   inventory?: { quantity: number; trackStock: boolean }
-  variants: ProductVariant[]
-  reviews: {
+  variants?: ProductVariant[]
+  reviews?: {
     id: string
     rating: number
     comment?: string
@@ -44,7 +41,7 @@ interface Product {
 
 export default function ProductPage() {
   const params = useParams()
-  const slug = params.slug as string
+  const slug = params?.slug as string
 
   const [product, setProduct] = useState<Product | null>(null)
   const [loading, setLoading] = useState(true)
@@ -57,6 +54,7 @@ export default function ProductPage() {
   const [whatsappNumber, setWhatsappNumber] = useState('0535372613')
 
   useEffect(() => {
+    if (!slug) return
     fetch(`/api/products/${slug}`)
       .then((r) => r.json())
       .then((d) => {
@@ -74,7 +72,15 @@ export default function ProductPage() {
       .catch(() => {})
   }, [slug])
 
-  const currentPrice = selectedVariant?.price ?? product?.price ?? 0
+  const productPrice = typeof product?.price === 'number' ? product.price : Number(product?.price || 0)
+  const currentPrice = selectedVariant?.price !== undefined
+    ? (typeof selectedVariant.price === 'number' ? selectedVariant.price : Number(selectedVariant.price || 0))
+    : productPrice
+
+  const productImages = Array.isArray(product?.images) ? product.images : []
+  const productReviews = Array.isArray(product?.reviews) ? product.reviews : []
+  const productVariants = Array.isArray(product?.variants) ? product.variants : []
+  const productFeatures = Array.isArray(product?.features) ? product.features : []
 
   const addToCart = () => {
     if (!product) return
@@ -84,7 +90,7 @@ export default function ProductPage() {
       name: product.name + (selectedVariant ? ` (${selectedVariant.value})` : ''),
       slug: product.slug,
       price: currentPrice,
-      image: product.images.find((i) => i.isMain)?.url || product.images[0]?.url,
+      image: productImages.find((i) => i.isMain)?.url || productImages[0]?.url || '/placeholder-product.jpg',
       quantity,
       variantId: selectedVariant?.id,
       notes: notes || undefined,
@@ -119,53 +125,47 @@ export default function ProductPage() {
     window.open(`https://wa.me/233${cleanedNum || '0535372613'}?text=${message}`, '_blank')
   }
 
-  const isOutOfStock = product?.inventory?.trackStock && product.inventory.quantity <= 0
+  const isOutOfStock = Boolean(product?.inventory?.trackStock && product.inventory.quantity <= 0)
 
   if (loading) {
     return (
-      <>
-        <Header />
-        <div className={styles.loadingPage}>
-          <div className={styles.loadingContent}>
-            <div className={styles.skeletonImage} />
-            <div className={styles.skeletonText}>
-              <div className={styles.skeletonLine} style={{ width: '60%', height: '2rem' }} />
-              <div className={styles.skeletonLine} style={{ width: '30%', height: '1.5rem' }} />
-              <div className={styles.skeletonLine} style={{ width: '90%' }} />
-              <div className={styles.skeletonLine} style={{ width: '80%' }} />
-            </div>
+      <div className={styles.loadingPage}>
+        <div className={styles.loadingContent}>
+          <div className={styles.skeletonImage} />
+          <div className={styles.skeletonText}>
+            <div className={styles.skeletonLine} style={{ width: '60%', height: '2rem' }} />
+            <div className={styles.skeletonLine} style={{ width: '30%', height: '1.5rem' }} />
+            <div className={styles.skeletonLine} style={{ width: '90%' }} />
+            <div className={styles.skeletonLine} style={{ width: '80%' }} />
           </div>
         </div>
-        <Footer />
-      </>
+      </div>
     )
   }
 
   if (notFound || !product) {
     return (
-      <>
-        <Header />
-        <div className={styles.notFound}>
-          <div className={styles.notFoundIcon}>🍨</div>
-          <h1>Product Not Found</h1>
-          <p>This product may have been removed or is no longer available.</p>
-          <Link href="/shop" className={styles.backBtn}>Browse All Products</Link>
-        </div>
-        <Footer />
-      </>
+      <div className={styles.notFound}>
+        <div className={styles.notFoundIcon}>🍨</div>
+        <h1>Product Not Found</h1>
+        <p>This product may have been removed or is no longer available.</p>
+        <Link href="/shop" className={styles.backBtn}>Browse All Products</Link>
+      </div>
     )
   }
 
   const avgRating =
-    product.reviews.length > 0
-      ? product.reviews.reduce((s, r) => s + r.rating, 0) / product.reviews.length
+    productReviews.length > 0
+      ? productReviews.reduce((s, r) => s + (Number(r.rating) || 0), 0) / productReviews.length
       : 0
 
+  const comparePrice = product.compareAtPrice ? (typeof product.compareAtPrice === 'number' ? product.compareAtPrice : Number(product.compareAtPrice || 0)) : null
+  const isOnSale = Boolean(comparePrice && comparePrice > currentPrice)
+  const currentImg = productImages[selectedImage] || productImages[0]
+
   return (
-    <>
-      <Header />
-      <main className={styles.productPage}>
-        <div className={styles.container}>
+    <div className={styles.productPage}>
+      <div className={styles.container}>
           {/* Breadcrumb */}
           <nav className={styles.breadcrumb}>
             <Link href="/">Home</Link>
@@ -186,8 +186,8 @@ export default function ProductPage() {
             <div className={styles.imagesSection}>
               <div className={styles.mainImageWrapper}>
                 <Image
-                  src={product.images[selectedImage]?.url || '/placeholder-product.jpg'}
-                  alt={product.images[selectedImage]?.altText || product.name}
+                  src={currentImg?.url || '/placeholder-product.jpg'}
+                  alt={currentImg?.altText || product.name}
                   fill
                   className={styles.mainImage}
                   sizes="(max-width: 768px) 100vw, 50vw"
@@ -197,11 +197,11 @@ export default function ProductPage() {
                   <div className={styles.outOfStockBanner}>Out of Stock</div>
                 )}
               </div>
-              {product.images.length > 1 && (
+              {productImages.length > 1 && (
                 <div className={styles.thumbnails}>
-                  {product.images.map((img, idx) => (
+                  {productImages.map((img, idx) => (
                     <button
-                      key={img.id}
+                      key={img.id || idx}
                       className={`${styles.thumbnail} ${selectedImage === idx ? styles.activeThumbnail : ''}`}
                       onClick={() => setSelectedImage(idx)}
                     >
@@ -220,25 +220,25 @@ export default function ProductPage() {
 
               <h1 className={styles.productTitle}>{product.name}</h1>
 
-              {product.reviews.length > 0 && (
+              {productReviews.length > 0 && (
                 <div className={styles.rating}>
                   <div className={styles.stars}>
                     {[1, 2, 3, 4, 5].map((s) => (
                       <span key={s} className={s <= Math.round(avgRating) ? styles.starFilled : styles.starEmpty}>★</span>
                     ))}
                   </div>
-                  <span className={styles.reviewCount}>({product.reviews.length} review{product.reviews.length !== 1 ? 's' : ''})</span>
+                  <span className={styles.reviewCount}>({productReviews.length} review{productReviews.length !== 1 ? 's' : ''})</span>
                 </div>
               )}
 
               <div className={styles.priceSection}>
                 <span className={styles.price}>GH₵{currentPrice.toFixed(2)}</span>
-                {product.compareAtPrice && product.compareAtPrice > product.price && (
-                  <span className={styles.comparePrice}>GH₵{product.compareAtPrice.toFixed(2)}</span>
+                {isOnSale && comparePrice !== null && (
+                  <span className={styles.comparePrice}>GH₵{comparePrice.toFixed(2)}</span>
                 )}
-                {product.compareAtPrice && product.compareAtPrice > product.price && (
+                {isOnSale && comparePrice !== null && (
                   <span className={styles.saveBadge}>
-                    Save GH₵{(product.compareAtPrice - product.price).toFixed(2)}
+                    Save GH₵{(comparePrice - currentPrice).toFixed(2)}
                   </span>
                 )}
               </div>
@@ -257,11 +257,11 @@ export default function ProductPage() {
               )}
 
               {/* Features */}
-              {product.features && product.features.length > 0 && (
+              {productFeatures.length > 0 && (
                 <div className={styles.features}>
                   <h3>Why You'll Love It</h3>
                   <ul>
-                    {product.features.map((f, i) => (
+                    {productFeatures.map((f, i) => (
                       <li key={i}>
                         <span className={styles.checkIcon}>✓</span> {f}
                       </li>
@@ -271,22 +271,25 @@ export default function ProductPage() {
               )}
 
               {/* Variants */}
-              {product.variants.length > 0 && (
+              {productVariants.length > 0 && (
                 <div className={styles.variantsSection}>
                   <h3>Options</h3>
                   <div className={styles.variantGrid}>
-                    {product.variants.map((v) => (
-                      <button
-                        key={v.id}
-                        className={`${styles.variantBtn} ${selectedVariant?.id === v.id ? styles.variantActive : ''}`}
-                        onClick={() => setSelectedVariant(selectedVariant?.id === v.id ? null : v)}
-                      >
-                        {v.value}
-                        {v.price !== product.price && (
-                          <span className={styles.variantPrice}> +GH₵{(v.price - product.price).toFixed(2)}</span>
-                        )}
-                      </button>
-                    ))}
+                    {productVariants.map((v) => {
+                      const varPrice = typeof v.price === 'number' ? v.price : Number(v.price || 0)
+                      return (
+                        <button
+                          key={v.id}
+                          className={`${styles.variantBtn} ${selectedVariant?.id === v.id ? styles.variantActive : ''}`}
+                          onClick={() => setSelectedVariant(selectedVariant?.id === v.id ? null : v)}
+                        >
+                          {v.value}
+                          {varPrice !== productPrice && (
+                            <span className={styles.variantPrice}> +GH₵{(varPrice - productPrice).toFixed(2)}</span>
+                          )}
+                        </button>
+                      )
+                    })}
                   </div>
                 </div>
               )}
@@ -353,11 +356,11 @@ export default function ProductPage() {
           </div>
 
           {/* Reviews Section */}
-          {product.reviews.length > 0 && (
+          {productReviews.length > 0 && (
             <section className={styles.reviewsSection}>
               <h2>Customer Reviews</h2>
               <div className={styles.reviewsGrid}>
-                {product.reviews.map((review) => (
+                {productReviews.map((review) => (
                   <div key={review.id} className={styles.reviewCard}>
                     <div className={styles.reviewHeader}>
                       <div className={styles.reviewStars}>
@@ -381,9 +384,6 @@ export default function ProductPage() {
             </section>
           )}
         </div>
-      </main>
-      <Footer />
-      <WhatsAppFloat />
-    </>
+      </div>
   )
 }

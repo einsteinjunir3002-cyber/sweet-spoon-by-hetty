@@ -1,15 +1,10 @@
-import Header from '@/components/store/Header'
-import Footer from '@/components/store/Footer'
-import WhatsAppFloat from '@/components/store/WhatsAppFloat'
 import Image from 'next/image'
 import Link from 'next/link'
 import styles from './about.module.css'
 
 export default function AboutPage() {
   return (
-    <>
-      <Header />
-      <main className={styles.aboutPage}>
+    <div className={styles.aboutPage}>
         {/* Hero Section */}
         <section className={styles.heroSection}>
           <div className="container">
@@ -91,9 +86,6 @@ export default function AboutPage() {
             </div>
           </div>
         </section>
-      </main>
-      <Footer />
-      <WhatsAppFloat />
-    </>
+      </div>
   )
 }
