@@ -1,3 +1,5 @@
+'use client'
+
 import Image from 'next/image'
 import Link from 'next/link'
 import styles from './ProductCard.module.css'
@@ -96,14 +98,13 @@ export function ProductCard({ product, currencySymbol = 'GH₵' }: ProductCardPr
           )}
         </div>
 
-        <button
+        <span
           className={`btn btn-primary btn-sm ${styles.addBtn}`}
-          disabled={isOutOfStock}
           aria-label={`View ${product.name}`}
-          onClick={(e) => e.preventDefault()} // Handled by Link
+          style={{ opacity: isOutOfStock ? 0.6 : 1, pointerEvents: 'none' }}
         >
           {isOutOfStock ? 'Sold Out' : 'View'}
-        </button>
+        </span>
       </div>
     </Link>
   )
