@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { signIn, getSession } from 'next-auth/react'
+import { signIn } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import Header from '@/components/store/Header'
@@ -38,22 +38,36 @@ export default function LoginPage() {
 
       if (res?.error) {
         setError('Invalid username/email or password')
-      } else {
-        const session = await getSession()
-        const userRole = (session?.user as { role?: string })?.role
-        
-        if (userRole === 'OWNER' || userRole === 'ADMIN') {
-          router.push('/admin')
-        } else if (callbackUrl && callbackUrl !== '/') {
-          router.push(callbackUrl)
-        } else {
-          router.push('/account')
-        }
-        router.refresh()
+        setLoading(false)
+        return
       }
+
+      // After sign-in, poll /api/auth/me to get the user role (works reliably with NextAuth v5)
+      let role: string | null = null
+      for (let attempt = 0; attempt < 5; attempt++) {
+        await new Promise((r) => setTimeout(r, 300))
+        try {
+          const meRes = await fetch('/api/auth/me', { cache: 'no-store' })
+          if (meRes.ok) {
+            const data = await meRes.json()
+            role = data.role
+            if (role) break
+          }
+        } catch {
+          // retry
+        }
+      }
+
+      if (role === 'OWNER' || role === 'ADMIN') {
+        router.push('/admin')
+      } else if (callbackUrl && callbackUrl !== '/' && !callbackUrl.startsWith('/admin')) {
+        router.push(callbackUrl)
+      } else {
+        router.push('/account')
+      }
+      router.refresh()
     } catch (err: unknown) {
       setError((err as Error).message || 'Failed to sign in')
-    } finally {
       setLoading(false)
     }
   }
@@ -119,7 +133,12 @@ export default function LoginPage() {
             </div>
 
             <button type="submit" disabled={loading} className={styles.submitBtn}>
-              {loading ? 'Signing In...' : 'Sign In'}
+              {loading ? (
+                <>
+                  <span className={styles.btnSpinner} />
+                  Signing In...
+                </>
+              ) : 'Sign In'}
             </button>
           </form>
 
