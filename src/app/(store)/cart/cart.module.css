@@ -137,8 +137,8 @@
 }
 
 .quantityControl button {
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -167,13 +167,42 @@
 
 .removeBtn {
   color: var(--color-gray-400);
-  padding: var(--spacing-1);
+  padding: var(--spacing-2);
+  min-width: 36px;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border-radius: var(--radius-md);
   transition: color var(--transition-fast);
 }
 
 .removeBtn:hover {
   color: var(--color-error);
+}
+
+@media (max-width: 480px) {
+  .cartPage {
+    padding-bottom: 6rem;
+  }
+
+  .itemsCard, .summaryCard {
+    padding: var(--spacing-4);
+  }
+
+  .cartItem {
+    grid-template-columns: 65px 1fr;
+    gap: var(--spacing-3);
+  }
+
+  .itemName {
+    font-size: 0.95rem;
+  }
+
+  .itemActions {
+    flex-wrap: wrap;
+    gap: var(--spacing-2);
+  }
 }
 
 .summaryCard {

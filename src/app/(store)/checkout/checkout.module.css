@@ -549,3 +549,42 @@
     grid-template-columns: 1fr;
   }
 }
+
+@media (max-width: 640px) {
+  .container {
+    padding: 1.25rem 1rem;
+  }
+
+  .checkoutPage {
+    padding-bottom: 6rem;
+  }
+
+  .pageTitle {
+    font-size: 1.6rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .formCard, .summaryCard {
+    padding: 1.25rem;
+    border-radius: 16px;
+  }
+
+  .deliveryOption {
+    padding: 0.85rem;
+  }
+
+  .placeOrderBtn {
+    padding: 0.95rem;
+    font-size: 1rem;
+  }
+
+  .securityBadges {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .badge {
+    font-size: 0.7rem;
+    padding: 0.4rem;
+  }
+}

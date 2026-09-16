@@ -598,16 +598,78 @@
 
 /* Responsive */
 @media (max-width: 768px) {
+  .productPage {
+    padding-bottom: 6rem;
+  }
+
+  .container {
+    padding: 0 1rem;
+  }
+
+  .breadcrumb {
+    padding: 1rem 0 0.5rem;
+    font-size: 0.8rem;
+  }
+
   .productLayout {
     grid-template-columns: 1fr;
-    gap: 2rem;
+    gap: 1.5rem;
+    padding: 0.5rem 0 2rem;
+  }
+
+  .mainImageWrapper {
+    border-radius: 18px;
+  }
+
+  .thumbnail {
+    width: 60px;
+    height: 60px;
+    border-radius: 10px;
+  }
+
+  .productTitle {
+    font-size: 1.5rem;
+  }
+
+  .price {
+    font-size: 1.6rem;
+  }
+
+  .comparePrice {
+    font-size: 1rem;
   }
 
   .actionBtns {
     grid-template-columns: 1fr;
+    gap: 0.6rem;
+  }
+
+  .addToCartBtn, .buyNowBtn, .whatsappBtn {
+    padding: 0.85rem;
+    font-size: 0.95rem;
+    min-height: 48px;
   }
 
   .loadingContent {
     grid-template-columns: 1fr;
+  }
+
+  .reviewsGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .variantGrid {
+    gap: 0.35rem;
+  }
+
+  .variantBtn {
+    padding: 0.45rem 0.75rem;
+    font-size: 0.85rem;
+  }
+
+  .quantitySection {
+    gap: 0.5rem;
   }
 }

@@ -328,3 +328,88 @@
   color: var(--brand-primary);
   text-decoration: none;
 }
+
+/* ============================================================
+   MOBILE RESPONSIVE ENHANCEMENTS (Homepage)
+   ============================================================ */
+@media (max-width: 640px) {
+  .hero {
+    min-height: 80vh;
+  }
+
+  .heroContent {
+    padding-top: var(--spacing-12);
+    padding-bottom: var(--spacing-12);
+  }
+
+  .featureCard {
+    padding: var(--spacing-6) var(--spacing-4);
+  }
+
+  .featureIcon {
+    font-size: 2rem;
+    margin-bottom: var(--spacing-2);
+  }
+
+  .featureTitle {
+    font-size: var(--text-lg);
+  }
+
+  .featureDesc {
+    font-size: var(--text-xs);
+  }
+}
+
+@media (max-width: 480px) {
+  .heroCtas {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .heroCtas .btn {
+    width: 100%;
+  }
+
+  .aboutHighlights {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-2);
+  }
+
+  .aboutCtas {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .aboutCtas .btn {
+    width: 100%;
+  }
+
+  .ctaButtons {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .ctaButtons .btn {
+    width: 100%;
+  }
+
+  .socialCards {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-2);
+  }
+
+  .socialCard {
+    padding: var(--spacing-4) var(--spacing-2);
+  }
+
+  .socialCardIcon {
+    width: 48px;
+    height: 48px;
+  }
+}
+
+@media (max-width: 360px) {
+  .socialCards {
+    grid-template-columns: 1fr;
+  }
+}

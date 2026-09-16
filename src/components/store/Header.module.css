@@ -215,8 +215,10 @@
   background: var(--color-white);
   transform: translateX(-100%);
   transition: transform var(--transition-base);
-  z-index: 99;
+  z-index: 1000;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  box-shadow: var(--shadow-xl);
 }
 
 @media (min-width: 768px) {
@@ -245,6 +247,9 @@
   border-radius: var(--radius-lg);
   text-decoration: none;
   transition: all var(--transition-fast);
+  min-height: 48px;
+  display: flex;
+  align-items: center;
 }
 
 .mobileNavLink:hover,
@@ -258,8 +263,10 @@
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.3);
-  z-index: 98;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  z-index: 999;
   animation: fadeIn 0.2s ease;
 }
 
@@ -276,4 +283,23 @@
 
 .accountMenu {
   position: relative;
+}
+
+/* Small mobile optimizations */
+@media (max-width: 400px) {
+  .headerInner {
+    gap: var(--spacing-2);
+  }
+  
+  .logoMain {
+    font-size: 1.2rem;
+  }
+  
+  .logoSub {
+    font-size: 0.65rem;
+  }
+  
+  .actions {
+    gap: 0;
+  }
 }
