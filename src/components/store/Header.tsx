@@ -33,11 +33,14 @@ export function Header({ logoUrl, businessName = 'Sweet Spoon by Hetty' }: Heade
     setIsMenuOpen(false)
   }, [pathname])
 
+  const isOwnerOrAdmin = (session?.user as { role?: string })?.role === 'OWNER' || (session?.user as { role?: string })?.role === 'ADMIN'
+
   const navLinks = [
     { href: '/', label: 'Home' },
     { href: '/shop', label: 'Shop' },
     { href: '/about', label: 'About' },
     { href: '/contact', label: 'Contact' },
+    ...(isOwnerOrAdmin ? [{ href: '/admin', label: '👑 Owner Panel' }] : []),
   ]
 
   const handleSearch = (e: React.FormEvent) => {
