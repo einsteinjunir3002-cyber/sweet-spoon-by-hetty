@@ -665,7 +665,7 @@
   .saleBadge { right: 0.4rem; }
 }
 
-@media (max-width: 360px) {
+@media (max-width: 640px) {
   .productGrid, .loadingGrid {
     grid-template-columns: minmax(0, 1fr);
     gap: 1rem;
