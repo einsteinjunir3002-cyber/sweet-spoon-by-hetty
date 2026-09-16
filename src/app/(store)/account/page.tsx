@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useState, useEffect } from 'react'
 import { useSession, signOut } from 'next-auth/react'
@@ -51,6 +51,7 @@ export default function AccountPage() {
   const [phone, setPhone] = useState('')
   const [selectedAvatar, setSelectedAvatar] = useState('🍨')
   const [customImageUrl, setCustomImageUrl] = useState('')
+  const [uploadingAvatar, setUploadingAvatar] = useState(false)
   const [profileSaving, setProfileSaving] = useState(false)
   const [profileMsg, setProfileMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
 
@@ -95,6 +96,38 @@ export default function AccountPage() {
       console.error('Failed to load profile:', err)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    if (file.size > 5 * 1024 * 1024) {
+      setProfileMsg({ type: 'error', text: 'Image file must be smaller than 5MB' })
+      return
+    }
+
+    setUploadingAvatar(true)
+    setProfileMsg(null)
+    
+    try {
+      const response = await fetch(`/api/upload?filename=${encodeURIComponent(file.name)}&type=profile`, {
+        method: 'POST',
+        body: file,
+      })
+      const data = await response.json()
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Upload failed')
+      }
+      
+      setCustomImageUrl(data.url)
+      setSelectedAvatar('') // clear preset avatar selection
+      setProfileMsg({ type: 'success', text: 'Avatar uploaded successfully. Remember to save your profile!' })
+    } catch (err: any) {
+      setProfileMsg({ type: 'error', text: err.message || 'Failed to upload avatar' })
+    } finally {
+      setUploadingAvatar(false)
     }
   }
 
@@ -265,7 +298,7 @@ export default function AccountPage() {
             <form onSubmit={handleUpdateProfile}>
               {/* Avatar Selector */}
               <div className={styles.avatarSection}>
-                <label>Choose Avatar Icon or Photo</label>
+                <label>Choose Avatar Icon or Upload Photo</label>
                 <div className={styles.avatarPresets}>
                   {AVATAR_PRESETS.map((preset) => (
                     <button
@@ -281,6 +314,32 @@ export default function AccountPage() {
                       {preset}
                     </button>
                   ))}
+                </div>
+                
+                <div style={{ marginTop: 12 }}>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAvatarUpload}
+                    id="avatar-upload-btn"
+                    style={{ display: 'none' }}
+                  />
+                  <label
+                    htmlFor="avatar-upload-btn"
+                    style={{
+                      display: 'inline-block',
+                      background: 'linear-gradient(135deg, #ec4899, #be185d)',
+                      color: '#fff',
+                      padding: '8px 18px',
+                      borderRadius: 20,
+                      fontWeight: 600,
+                      cursor: uploadingAvatar ? 'not-allowed' : 'pointer',
+                      fontSize: '0.875rem',
+                      opacity: uploadingAvatar ? 0.7 : 1
+                    }}
+                  >
+                    {uploadingAvatar ? 'Uploading...' : 'Upload Device Photo'}
+                  </label>
                 </div>
               </div>
 

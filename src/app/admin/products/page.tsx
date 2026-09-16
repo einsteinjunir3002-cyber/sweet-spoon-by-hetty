@@ -46,6 +46,7 @@ export default function AdminProductsPage() {
   const [isPublished, setIsPublished] = useState(true)
   const [isFeatured, setIsFeatured] = useState(false)
   const [imageUrl, setImageUrl] = useState('')
+  const [uploadingImage, setUploadingImage] = useState(false)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
 
@@ -75,18 +76,33 @@ export default function AdminProductsPage() {
     fetchCategories()
   }, [])
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
     if (file.size > 5 * 1024 * 1024) {
       setError('Image file must be smaller than 5MB')
       return
     }
-    const reader = new FileReader()
-    reader.onloadend = () => {
-      setImageUrl(reader.result as string)
+    
+    setUploadingImage(true)
+    setError('')
+    try {
+      const response = await fetch(`/api/upload?filename=${encodeURIComponent(file.name)}&type=product`, {
+        method: 'POST',
+        body: file,
+      })
+      const data = await response.json()
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Upload failed')
+      }
+      
+      setImageUrl(data.url)
+    } catch (err: any) {
+      setError(err.message || 'Failed to upload image')
+    } finally {
+      setUploadingImage(false)
     }
-    reader.readAsDataURL(file)
   }
 
   const openCreateForm = () => {
@@ -352,11 +368,12 @@ export default function AdminProductsPage() {
                       padding: '8px 18px',
                       borderRadius: 20,
                       fontWeight: 600,
-                      cursor: 'pointer',
-                      fontSize: '0.875rem'
+                      cursor: uploadingImage ? 'not-allowed' : 'pointer',
+                      fontSize: '0.875rem',
+                      opacity: uploadingImage ? 0.7 : 1
                     }}
                   >
-                    {imageUrl ? 'Change Photo' : 'Upload Image File'}
+                    {uploadingImage ? 'Uploading...' : (imageUrl ? 'Change Photo' : 'Upload Image File')}
                   </label>
 
                   <div style={{ width: '100%', borderTop: '1px solid #fbcfe8', margin: '4px 0' }} />
