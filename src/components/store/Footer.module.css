@@ -225,3 +225,44 @@
 .bottomLinks a:hover {
   color: var(--color-pink-400);
 }
+
+/* ============================================================
+   MOBILE RESPONSIVE ENHANCEMENTS (Footer)
+   ============================================================ */
+@media (max-width: 639px) {
+  .footerGrid {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-8) var(--spacing-4);
+  }
+
+  .footerBrand {
+    grid-column: span 2;
+    text-align: center;
+  }
+
+  .footerLogo {
+    align-items: center;
+  }
+
+  .socialLinks {
+    justify-content: center;
+  }
+
+  .footerCol:last-child {
+    grid-column: span 2;
+    text-align: center;
+  }
+
+  .contactList li {
+    justify-content: center;
+  }
+
+  .bottomBar {
+    padding-bottom: 90px; /* Space for the floating WhatsApp button */
+  }
+
+  .bottomLinks {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
