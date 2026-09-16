@@ -7,6 +7,7 @@ import { db } from '@/lib/db'
 
 export interface WhatsAppOrderParams {
   customerName: string
+  customerPhone?: string
   orderNumber?: string
   items: Array<{
     name: string
@@ -30,6 +31,7 @@ export interface WhatsAppOrderParams {
 export function buildWhatsAppOrderMessage(params: WhatsAppOrderParams): string {
   const {
     customerName,
+    customerPhone,
     orderNumber,
     items,
     deliveryType,
@@ -47,6 +49,10 @@ export function buildWhatsAppOrderMessage(params: WhatsAppOrderParams): string {
     '',
     `👤 *Customer:* ${customerName}`,
   ]
+
+  if (customerPhone) {
+    lines.push(`📞 *Contact me via:* ${customerPhone}`)
+  }
 
   if (orderNumber) {
     lines.push(`📋 *Order #:* ${orderNumber}`)

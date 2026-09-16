@@ -19,6 +19,7 @@ export async function GET(_request: NextRequest) {
     todaySalesResult,
     weekSalesResult,
     monthSalesResult,
+    allTimeSalesResult,
     totalOrders,
     recentOrders,
     lowStockProducts,
@@ -37,6 +38,10 @@ export async function GET(_request: NextRequest) {
     }),
     db.order.aggregate({
       where: { status: { in: ['PAID', 'CONFIRMED', 'PREPARING', 'READY', 'OUT_FOR_DELIVERY', 'DELIVERED'] }, createdAt: { gte: monthStart } },
+      _sum: { total: true },
+    }),
+    db.order.aggregate({
+      where: { status: { in: ['PAID', 'CONFIRMED', 'PREPARING', 'READY', 'OUT_FOR_DELIVERY', 'DELIVERED'] } },
       _sum: { total: true },
     }),
     db.order.count(),
@@ -61,15 +66,20 @@ export async function GET(_request: NextRequest) {
   ])
 
   return NextResponse.json({
-    todayOrders,
-    pendingOrders,
-    todaySales: todaySalesResult._sum.total ?? 0,
-    weekSales: weekSalesResult._sum.total ?? 0,
-    monthSales: monthSalesResult._sum.total ?? 0,
-    totalOrders,
+    stats: {
+      totalRevenue: allTimeSalesResult._sum.total ?? 0,
+      totalOrders,
+      pendingOrdersCount: pendingOrders,
+      lowStockCount: lowStockProducts.length,
+    },
     recentOrders,
-    lowStockProducts,
-    newMessages,
-    productCount,
+    lowStockProducts: lowStockProducts.map(inv => ({
+      id: inv.product.id,
+      name: inv.product.name,
+      inventory: {
+        quantity: inv.quantity,
+        lowStockThreshold: inv.lowStockThreshold
+      }
+    })),
   })
 }

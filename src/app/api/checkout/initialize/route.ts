@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
-import { initializePayment, generatePaymentReference } from '@/lib/paystack'
 import { checkoutSchemaObject } from '@/lib/validations'
 import { generateOrderNumber, calculateDiscount } from '@/lib/utils'
+import { buildWhatsAppOrderMessage, buildWhatsAppUrl, WhatsAppOrderParams } from '@/lib/whatsapp'
 import { z } from 'zod'
 
 const checkoutBodySchema = checkoutSchemaObject.extend({
@@ -153,53 +153,43 @@ export async function POST(request: NextRequest) {
         couponId,
         couponCode: data.couponCode,
         total,
-        status: 'PAYMENT_PENDING',
+        status: 'PENDING',
         items: { create: orderItemsData },
         statusHistory: {
-          create: { status: 'PAYMENT_PENDING', note: 'Order created, awaiting payment' },
+          create: { status: 'PENDING', note: 'Order created via WhatsApp checkout' },
         },
       },
     })
 
-    // Initialize Paystack payment
-    const reference = generatePaymentReference(orderNumber)
-    const email = data.customerEmail || `${data.customerPhone}@sweetspoon.order`
-
-    const paystackResponse = await initializePayment({
-      email,
-      amount: total,
-      reference,
-      callbackUrl: `${process.env.NEXT_PUBLIC_SITE_URL}/checkout/verify?ref=${reference}`,
-      metadata: {
-        orderId: order.id,
-        orderNumber,
-        customerName: data.customerName,
-        customerPhone: data.customerPhone,
-      },
-    })
-
-    if (!paystackResponse.status) {
-      // Clean up failed order
-      await db.order.delete({ where: { id: order.id } })
-      return NextResponse.json({ error: 'Payment initialization failed. Please try again.' }, { status: 500 })
+    // Construct WhatsApp message
+    const waParams: WhatsAppOrderParams = {
+      customerName: data.customerName,
+      customerPhone: data.customerPhone,
+      orderNumber: order.orderNumber,
+      items: orderItemsData.map((item) => ({
+        name: item.name,
+        quantity: item.quantity,
+        price: item.price,
+      })),
+      deliveryType: data.deliveryType,
+      deliveryAddress: data.deliveryAddress || undefined,
+      deliveryArea: data.deliveryArea || undefined,
+      subtotal,
+      deliveryFee,
+      discountAmount,
+      total,
+      notes: data.orderNotes || undefined,
     }
 
-    // Create payment record
-    await db.payment.create({
-      data: {
-        orderId: order.id,
-        reference: paystackResponse.data.reference,
-        amount: total,
-        method: 'MOBILE_MONEY', // Will be updated on verification
-        status: 'PENDING',
-      },
-    })
+    const message = buildWhatsAppOrderMessage(waParams)
+    // The shop owner's number
+    const whatsappNumber = process.env.WHATSAPP_NUMBER || '233535372613'
+    const whatsappUrl = buildWhatsAppUrl(whatsappNumber, message)
 
     return NextResponse.json({
       orderId: order.id,
       orderNumber,
-      authorizationUrl: paystackResponse.data.authorization_url,
-      reference: paystackResponse.data.reference,
+      authorizationUrl: whatsappUrl, // Keep this key for frontend compatibility
     })
   } catch (err: unknown) {
     if (err && typeof err === 'object' && 'errors' in err) {

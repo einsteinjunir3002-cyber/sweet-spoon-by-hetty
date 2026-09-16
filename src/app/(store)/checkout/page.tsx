@@ -174,23 +174,17 @@ export default function CheckoutPage() {
 
   if (cart.length === 0 && step === 'details') {
     return (
-      <>
-        <Header />
-        <div className={styles.emptyCart}>
-          <div className={styles.emptyCartIcon}>🛒</div>
-          <h2>Your cart is empty</h2>
-          <p>Add some delicious products before checking out!</p>
-          <Link href="/shop" className={styles.shopBtn}>Browse Products</Link>
-        </div>
-        <Footer />
-      </>
+      <div className={styles.emptyCart}>
+        <div className={styles.emptyCartIcon}>🛒</div>
+        <h2>Your cart is empty</h2>
+        <p>Add some delicious products before checking out!</p>
+        <Link href="/shop" className={styles.shopBtn}>Browse Products</Link>
+      </div>
     )
   }
 
   return (
-    <>
-      <Header />
-      <main className={styles.checkoutPage}>
+    <main className={styles.checkoutPage}>
         <div className={styles.container}>
           <h1 className={styles.pageTitle}>Checkout</h1>
 
@@ -359,12 +353,12 @@ export default function CheckoutPage() {
                     Processing...
                   </span>
                 ) : (
-                  `Pay GH₵${total.toFixed(2)} Securely →`
+                  `Order via WhatsApp →`
                 )}
               </button>
 
               <div className={styles.paymentNote}>
-                🔒 Secure payment powered by Paystack — MoMo, Card & more accepted
+                📱 We will process your order directly on WhatsApp.
               </div>
             </div>
 
@@ -405,28 +399,6 @@ export default function CheckoutPage() {
                   ))}
                 </div>
 
-                {/* Coupon */}
-                <div className={styles.couponSection}>
-                  <div className={styles.couponRow}>
-                    <input
-                      type="text"
-                      placeholder="Coupon code"
-                      value={couponCode}
-                      onChange={(e) => { setCouponCode(e.target.value.toUpperCase()); setCouponApplied(false); setDiscount(0) }}
-                      disabled={couponApplied}
-                    />
-                    <button
-                      onClick={applyCoupon}
-                      disabled={couponLoading || couponApplied}
-                      className={couponApplied ? styles.couponApplied : ''}
-                    >
-                      {couponApplied ? '✓ Applied' : couponLoading ? '...' : 'Apply'}
-                    </button>
-                  </div>
-                  {couponError && <p className={styles.couponError}>{couponError}</p>}
-                  {couponApplied && <p className={styles.couponSuccess}>🎉 Discount applied!</p>}
-                </div>
-
                 {/* Totals */}
                 <div className={styles.totalsSection}>
                   <div className={styles.totalRow}>
@@ -459,14 +431,11 @@ export default function CheckoutPage() {
               </div>
 
               <div className={styles.securityBadges}>
-                <div className={styles.badge}>🔒 SSL Encrypted</div>
-                <div className={styles.badge}>✓ Paystack Secured</div>
+                <div className={styles.badge}>📱 Quick WhatsApp Order</div>
               </div>
             </div>
           </div>
         </div>
       </main>
-      <Footer />
-    </>
   )
 }

@@ -11,10 +11,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const { data: session, status } = useSession()
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [currentTime, setCurrentTime] = useState('')
+  const [greeting, setGreeting] = useState('')
 
   useEffect(() => {
     const update = () => {
       setCurrentTime(new Date().toLocaleTimeString('en-GH', { hour: '2-digit', minute: '2-digit', hour12: true }))
+      setGreeting(getTimeOfDay())
     }
     update()
     const t = setInterval(update, 60000)
@@ -160,7 +162,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className={styles.contentHeader}>
           <div className={styles.pageInfo}>
             <div className={styles.pageGreeting}>
-              Good {getTimeOfDay()}! <span className={styles.ownerName}>{userName} 👋</span>
+              Good {greeting || 'Day'}! <span className={styles.ownerName}>{userName} 👋</span>
             </div>
             <div className={styles.pageTime}>{currentTime} • Sweet Spoon Owner Dashboard</div>
           </div>
