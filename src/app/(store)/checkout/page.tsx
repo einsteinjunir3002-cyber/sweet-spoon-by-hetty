@@ -184,7 +184,7 @@ export default function CheckoutPage() {
   }
 
   return (
-    <main className={styles.checkoutPage}>
+    <div className={styles.checkoutPage}>
         <div className="container">
           <h1 className={styles.pageTitle}>Checkout</h1>
 
@@ -436,6 +436,6 @@ export default function CheckoutPage() {
             </div>
           </div>
         </div>
-      </main>
+      </div>
   )
 }

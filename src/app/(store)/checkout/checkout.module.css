@@ -3,6 +3,18 @@
   background: #fafaf8;
   padding-top: 2rem;
   padding-bottom: 5rem;
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+.checkoutPage :global(.container) {
+  width: 100%;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 var(--spacing-4);
+  box-sizing: border-box;
 }
 
 .pageTitle {
@@ -16,9 +28,13 @@
 /* Layout */
 .checkoutLayout {
   display: grid;
-  grid-template-columns: 1fr 400px;
+  grid-template-columns: minmax(0, 1fr) 400px;
   gap: 2rem;
   align-items: start;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 /* Form Section */
@@ -26,6 +42,10 @@
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .formCard {
@@ -33,6 +53,11 @@
   border-radius: 20px;
   padding: 1.75rem;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .formCard h2 {
@@ -44,14 +69,22 @@
 
 .formGrid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 1rem;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .formGroup {
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .fullWidth {
@@ -70,6 +103,7 @@
   width: 100%;
   box-sizing: border-box;
   max-width: 100%;
+  min-width: 0;
   border: 2px solid #f8bbd0;
   border-radius: 12px;
   padding: 0.75rem 1rem;
@@ -79,6 +113,12 @@
   transition: border-color 0.2s;
   font-family: inherit;
   background: white;
+}
+
+.formGroup select {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .formGroup input:focus,
@@ -95,9 +135,13 @@
 /* Delivery Options */
 .deliveryOptions {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 0.75rem;
   margin-bottom: 1.25rem;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .deliveryOption {
@@ -109,6 +153,10 @@
   padding: 1rem;
   cursor: pointer;
   transition: all 0.2s;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .deliveryOption input[type="radio"] {
@@ -123,26 +171,41 @@
   background: #fce4ec;
 }
 
+.deliveryOption > div {
+  flex: 1;
+  min-width: 0;
+}
+
 .optionTitle {
   font-weight: 700;
   color: #2d1b2e;
   font-size: 0.95rem;
+  word-break: break-word;
 }
 
 .optionDesc {
   color: #888;
   font-size: 0.8rem;
+  word-break: break-word;
 }
 
 .deliveryFields {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 /* Pickup Info */
 .pickupInfo {
   margin-top: 0.75rem;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .pickupBox {
@@ -152,6 +215,10 @@
   border-radius: 14px;
   padding: 1rem 1.25rem;
   font-size: 0.9rem;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .pickupBox span {
@@ -159,15 +226,22 @@
   flex-shrink: 0;
 }
 
+.pickupBox > div {
+  flex: 1;
+  min-width: 0;
+}
+
 .pickupBox strong {
   display: block;
   color: #2d1b2e;
   margin-bottom: 0.25rem;
+  word-break: break-word;
 }
 
 .pickupBox p {
   color: #7b4f6a;
   margin: 0;
+  word-break: break-word;
 }
 
 /* Error */
@@ -178,11 +252,17 @@
   border-radius: 12px;
   padding: 0.75rem 1.25rem;
   font-size: 0.9rem;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  word-break: break-word;
 }
 
 /* Submit Button */
 .placeOrderBtn {
   width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
   background: linear-gradient(135deg, #e91e8c, #c2185b);
   color: white;
   border: none;
@@ -193,6 +273,10 @@
   cursor: pointer;
   transition: all 0.2s;
   box-shadow: 0 4px 20px rgba(233, 30, 140, 0.3);
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .placeOrderBtn:hover:not(:disabled) {
@@ -231,6 +315,7 @@
   color: #888;
   font-size: 0.8rem;
   margin-top: 0.5rem;
+  word-break: break-word;
 }
 
 /* Order Summary */
@@ -240,6 +325,10 @@
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .summaryCard {
@@ -247,6 +336,11 @@
   border-radius: 20px;
   padding: 1.75rem;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .summaryCard h2 {
@@ -531,7 +625,12 @@
 /* Responsive */
 @media (max-width: 900px) {
   .checkoutLayout {
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    gap: 1.5rem;
   }
 
   .summarySection {
@@ -539,28 +638,55 @@
   }
 
   .formGrid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .deliveryOptions {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
 @media (max-width: 640px) {
   .checkoutPage {
-    padding-top: 1.25rem;
+    padding-top: 1rem;
     padding-bottom: 6rem;
   }
 
+  .checkoutPage :global(.container) {
+    padding: 0 0.875rem;
+  }
+
   .pageTitle {
-    font-size: 1.6rem;
-    margin-bottom: 1.25rem;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .formSection {
+    gap: 1rem;
   }
 
   .formCard, .summaryCard {
-    padding: 1.25rem;
+    padding: 1.1rem;
     border-radius: 16px;
+  }
+
+  .formGrid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+
+  .deliveryOptions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .formGroup input,
+  .formGroup select,
+  .formGroup textarea {
+    padding: 0.75rem 0.85rem;
+    font-size: 0.9rem;
   }
 
   .deliveryOption {
@@ -569,7 +695,8 @@
 
   .placeOrderBtn {
     padding: 0.95rem;
-    font-size: 1rem;
+    font-size: 1.05rem;
+    border-radius: 14px;
   }
 
   .securityBadges {
@@ -580,5 +707,34 @@
   .badge {
     font-size: 0.7rem;
     padding: 0.4rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .checkoutPage :global(.container) {
+    padding: 0 0.625rem;
+  }
+
+  .formCard, .summaryCard {
+    padding: 0.875rem 0.75rem;
+    border-radius: 14px;
+  }
+
+  .deliveryOption {
+    padding: 0.75rem 0.65rem;
+    gap: 0.5rem;
+  }
+
+  .optionTitle {
+    font-size: 0.85rem;
+  }
+
+  .optionDesc {
+    font-size: 0.75rem;
+  }
+
+  .placeOrderBtn {
+    font-size: 0.95rem;
+    padding: 0.85rem;
   }
 }
