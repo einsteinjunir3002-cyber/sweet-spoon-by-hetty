@@ -137,8 +137,8 @@
 }
 
 .quantityControl button {
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -168,8 +168,8 @@
 .removeBtn {
   color: var(--color-gray-400);
   padding: var(--spacing-2);
-  min-width: 36px;
-  min-height: 36px;
+  min-width: 44px;
+  min-height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;

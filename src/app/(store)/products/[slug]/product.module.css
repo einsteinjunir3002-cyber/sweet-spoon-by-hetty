@@ -75,7 +75,8 @@
   display: flex;
   gap: 0.75rem;
   overflow-x: auto;
-  padding-bottom: 0.5rem;
+  padding-bottom: 0.75rem;
+  -webkit-overflow-scrolling: touch;
 }
 
 .thumbnail {
@@ -306,8 +307,8 @@
 }
 
 .quantityControl button {
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   background: #fce4ec;
   border: none;
   font-size: 1.2rem;

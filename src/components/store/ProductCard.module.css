@@ -131,7 +131,7 @@
 
 @media (max-width: 480px) {
   .body {
-    padding: var(--spacing-3) var(--spacing-3);
+    padding: var(--spacing-4);
   }
 
   .name {
@@ -167,9 +167,9 @@
   }
 
   .addBtn {
-    padding: var(--spacing-1) var(--spacing-3);
-    font-size: var(--text-xs);
-    min-height: 32px;
+    padding: var(--spacing-2) var(--spacing-4);
+    font-size: var(--text-sm);
+    min-height: 44px;
   }
 
   .badges {

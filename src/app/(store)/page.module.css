@@ -334,7 +334,7 @@
    ============================================================ */
 @media (max-width: 640px) {
   .hero {
-    min-height: 80vh;
+    min-height: 60vh;
   }
 
   .heroContent {

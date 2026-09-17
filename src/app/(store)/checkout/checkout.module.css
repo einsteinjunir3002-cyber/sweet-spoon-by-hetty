@@ -1,13 +1,8 @@
 .checkoutPage {
   min-height: 100vh;
   background: #fafaf8;
+  padding-top: 2rem;
   padding-bottom: 5rem;
-}
-
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem 1.5rem;
 }
 
 .pageTitle {
@@ -553,11 +548,8 @@
 }
 
 @media (max-width: 640px) {
-  .container {
-    padding: 1.25rem 1rem;
-  }
-
   .checkoutPage {
+    padding-top: 1.25rem;
     padding-bottom: 6rem;
   }
 

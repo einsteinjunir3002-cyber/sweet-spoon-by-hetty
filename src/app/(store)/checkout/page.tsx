@@ -185,7 +185,7 @@ export default function CheckoutPage() {
 
   return (
     <main className={styles.checkoutPage}>
-        <div className={styles.container}>
+        <div className="container">
           <h1 className={styles.pageTitle}>Checkout</h1>
 
           <div className={styles.checkoutLayout}>
